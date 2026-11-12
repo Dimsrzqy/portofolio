@@ -2,10 +2,19 @@
 
 import React from "react";
 import { profileData } from "@/data/profile";
+import { EducationItem, ExperienceItem } from "@/types";
 import { Briefcase, GraduationCap, Calendar, MapPin, Compass } from "lucide-react";
 import { motion } from "framer-motion";
 
-export function EducationExperience() {
+interface EducationExperienceProps {
+  education?: EducationItem[];
+  experience?: ExperienceItem[];
+}
+
+export function EducationExperience({
+  education = profileData.education,
+  experience = profileData.experience,
+}: EducationExperienceProps) {
   return (
     <section id="experience" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/70 comic-halftone">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -32,7 +41,7 @@ export function EducationExperience() {
             </div>
 
             <div className="relative pl-7 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[3px] before:bg-zinc-950 dark:before:bg-zinc-700">
-              {profileData.education.map((item, index) => (
+              {education.map((item, index) => (
                 <motion.div
                   key={item.institution}
                   initial={{ opacity: 0, x: -12 }}
@@ -91,11 +100,11 @@ export function EducationExperience() {
           <div>
             <div className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700">
               <Briefcase className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span>Field Operations</span>
+              <span>Work Experience</span>
             </div>
 
             <div className="relative pl-7 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[3px] before:bg-zinc-950 dark:before:bg-zinc-700">
-              {profileData.experience.map((item, index) => (
+              {experience.map((item, index) => (
                 <motion.div
                   key={item.role + item.company}
                   initial={{ opacity: 0, x: -12 }}

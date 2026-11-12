@@ -72,7 +72,7 @@ export async function updateProjectAction(
   formData: FormData
 ): Promise<AdminActionResult> {
   const techStackRaw = formData.get("tech_stack");
-  const tech_stack = typeof techStackRaw === "string"
+  const tech_stack = typeof techStackRaw === "string" 
     ? techStackRaw.split(",").map((s) => s.trim()).filter(Boolean)
     : [];
 
@@ -130,9 +130,39 @@ export async function deleteProjectAction(id: string) {
   const supabase = await createServerSupabaseClient();
   if (!supabase) return { success: false, message: "Supabase not connected" };
 
+  // 1. Ambil data project untuk mengetahui file gambarnya sebelum dihapus
+  const { data: project } = await supabase
+    .from("projects")
+    .select("image_url")
+    .eq("id", id)
+    .single();
+
+  // 2. Hapus baris data dari tabel 'projects' di Supabase
   const { error } = await supabase.from("projects").delete().eq("id", id);
   if (error) {
     return { success: false, message: error.message };
+  }
+
+  // 3. Otomatis bersihkan file gambar dari Supabase Storage jika tersimpan di sana
+  if (project?.image_url) {
+    try {
+      const url = project.image_url;
+      // Contoh format URL: https://[id].supabase.co/storage/v1/object/public/portfolio-assets/projects/cover.webp
+      if (url.includes("/storage/v1/object/public/")) {
+        const parts = url.split("/storage/v1/object/public/")[1];
+        if (parts) {
+          const slashIdx = parts.indexOf("/");
+          const bucket = parts.substring(0, slashIdx);
+          const filePath = parts.substring(slashIdx + 1);
+
+          if (bucket && filePath) {
+            await supabase.storage.from(bucket).remove([filePath]);
+          }
+        }
+      }
+    } catch {
+      // Abaikan error storage agar penghapusan data tetap berhasil
+    }
   }
 
   revalidatePath("/");
@@ -172,5 +202,6 @@ export async function deleteMessageAction(id: string) {
   }
 
   revalidatePath("/admin/messages");
+  revalidatePath("/admin");
   return { success: true };
 }

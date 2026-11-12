@@ -5,12 +5,24 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { createClient } from "@/lib/supabase/client";
 import { profileData } from "@/data/profile";
-import { Lock, ArrowLeft, Loader2, AlertCircle, KeyRound, Mail } from "lucide-react";
+import { ThemeToggle } from "@/components/ui/theme-toggle";
+import {
+  Lock,
+  ArrowLeft,
+  Loader2,
+  AlertCircle,
+  KeyRound,
+  Mail,
+  Eye,
+  EyeOff,
+  ShieldCheck,
+} from "lucide-react";
 
 export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -52,47 +64,60 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-zinc-50 dark:bg-zinc-950 flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
+    <div className="min-h-screen bg-[#fbfbfd] dark:bg-[#09090c] text-zinc-950 dark:text-zinc-50 flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8 comic-halftone relative selection:bg-indigo-500 selection:text-white">
+      {/* Top Floating Header */}
+      <header className="fixed top-5 inset-x-0 max-w-4xl mx-auto px-4 sm:px-6 flex items-center justify-between z-30 pointer-events-none">
         <Link
           href="/"
-          className="inline-flex items-center gap-2 text-xs font-medium text-zinc-500 hover:text-zinc-900 dark:hover:text-white transition-colors mb-8 min-h-[44px] flex items-center"
+          className="pointer-events-auto comic-panel-sm inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-800 dark:text-zinc-200 hover:text-indigo-600 dark:hover:text-indigo-400 active:translate-x-0.5 active:translate-y-0.5 transition-all min-h-[44px]"
         >
-          <ArrowLeft className="w-4 h-4" />
+          <ArrowLeft className="w-4 h-4 shrink-0" />
           <span>Kembali ke Beranda</span>
         </Link>
 
-        <div className="w-12 h-12 rounded-xl bg-zinc-900 text-white dark:bg-white dark:text-zinc-950 flex items-center justify-center font-bold text-lg mx-auto shadow-sm">
-          {profileData.initials}
+        <div className="pointer-events-auto">
+          <ThemeToggle />
+        </div>
+      </header>
+
+      {/* Main Authentication Box */}
+      <div className="w-full max-w-md mx-auto pt-10 sm:pt-6 z-10">
+        {/* Brand Avatar & Heading */}
+        <div className="flex flex-col items-center text-center mb-6">
+          <div className="mb-3">
+            <div className="w-14 h-14 rounded-2xl bg-indigo-600 text-white flex items-center justify-center font-black font-mono text-2xl border-2 border-zinc-950 dark:border-white shadow-[3.5px_3.5px_0px_0px_#09090b] dark:shadow-[3.5px_3.5px_0px_0px_#6366f1] rotate-[-2deg] hover:rotate-0 transition-transform">
+              {profileData.initials}
+            </div>
+          </div>
+
+          <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-tight text-zinc-950 dark:text-white">
+            Control Center
+          </h1>
+          <p className="mt-1 text-xs text-zinc-500 dark:text-zinc-400 font-mono">
+            Masuk dengan akun terdaftar untuk mengelola portofolio.
+          </p>
         </div>
 
-        <h2 className="mt-6 text-center text-2xl font-bold tracking-tight text-zinc-950 dark:text-white">
-          Admin Control Center
-        </h2>
-        <p className="mt-2 text-center text-xs text-zinc-500 dark:text-zinc-400">
-          Masuk dengan akun Supabase Auth Anda untuk mengelola konten portfolio.
-        </p>
-      </div>
-
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="bg-white dark:bg-zinc-900/80 py-8 px-6 shadow-sm border border-zinc-200 dark:border-zinc-800 rounded-2xl sm:px-10">
+        {/* Comic Panel Card */}
+        <div className="comic-panel rounded-2xl border-2 border-zinc-950 dark:border-zinc-700 bg-white dark:bg-zinc-900 p-6 sm:p-8 shadow-[5px_5px_0px_0px_#09090b] dark:shadow-[5px_5px_0px_0px_rgba(99,102,241,0.7)]">
           {errorMessage && (
-            <div className="mb-6 p-4 rounded-xl border border-red-500/30 bg-red-50/70 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs flex items-start gap-2.5">
+            <div className="mb-5 p-3.5 rounded-xl border-2 border-red-500 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 text-xs flex items-start gap-2.5 shadow-[2px_2px_0px_0px_#ef4444]">
               <AlertCircle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-              <p className="leading-relaxed">{errorMessage}</p>
+              <p className="font-semibold leading-relaxed">{errorMessage}</p>
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Email Field */}
+            <div className="space-y-1.5">
               <label
                 htmlFor="email"
-                className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5"
+                className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 font-mono"
               >
                 Email Admin
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
                   <Mail className="w-4 h-4" />
                 </div>
                 <input
@@ -104,60 +129,85 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="admin@example.com"
-                  className="block w-full pl-9 pr-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm min-h-[44px]"
+                  className="block w-full pl-10 pr-3.5 py-2.5 rounded-xl border-2 border-zinc-950 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-white text-xs font-mono placeholder:text-zinc-400 focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:shadow-[2px_2px_0px_0px_#6366f1] transition-all min-h-[44px]"
                 />
               </div>
             </div>
 
-            <div>
+            {/* Password Field */}
+            <div className="space-y-1.5">
               <label
                 htmlFor="password"
-                className="block text-xs font-semibold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 mb-1.5"
+                className="block text-[11px] font-bold uppercase tracking-wider text-zinc-700 dark:text-zinc-300 font-mono"
               >
                 Kata Sandi
               </label>
               <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-zinc-400">
+                <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-zinc-400">
                   <KeyRound className="w-4 h-4" />
                 </div>
                 <input
                   id="password"
                   name="password"
-                  type="password"
+                  type={showPassword ? "text" : "password"}
                   autoComplete="current-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="block w-full pl-9 pr-3 py-2.5 rounded-lg border border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm min-h-[44px]"
+                  className="block w-full pl-10 pr-11 py-2.5 rounded-xl border-2 border-zinc-950 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-950 dark:text-white text-xs font-mono placeholder:text-zinc-400 focus:outline-none focus:border-indigo-600 dark:focus:border-indigo-400 focus:shadow-[2px_2px_0px_0px_#6366f1] transition-all min-h-[44px]"
                 />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute inset-y-0 right-0 pr-3.5 flex items-center text-zinc-400 hover:text-zinc-700 dark:hover:text-zinc-200 cursor-pointer min-h-[44px]"
+                  aria-label={showPassword ? "Sembunyikan sandi" : "Tampilkan sandi"}
+                >
+                  {showPassword ? (
+                    <EyeOff className="w-4 h-4" />
+                  ) : (
+                    <Eye className="w-4 h-4" />
+                  )}
+                </button>
               </div>
             </div>
 
-            <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-white dark:text-zinc-950 dark:hover:bg-zinc-200 font-medium text-sm transition-all disabled:opacity-50 min-h-[44px] cursor-pointer"
-            >
-              {isLoading ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Memverifikasi...</span>
-                </>
-              ) : (
-                <>
-                  <Lock className="w-4 h-4" />
-                  <span>Masuk ke Dashboard</span>
-                </>
-              )}
-            </button>
+            {/* Submit Button */}
+            <div className="pt-2">
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="comic-btn w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-indigo-600 text-white font-bold text-xs uppercase tracking-wider hover:bg-indigo-700 active:translate-x-0.5 active:translate-y-0.5 transition-all disabled:opacity-50 min-h-[44px] cursor-pointer"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Memverifikasi Akun...</span>
+                  </>
+                ) : (
+                  <>
+                    <Lock className="w-4 h-4 stroke-[2.5]" />
+                    <span>Masuk ke Dashboard</span>
+                  </>
+                )}
+              </button>
+            </div>
           </form>
 
-          <div className="mt-6 pt-6 border-t border-zinc-100 dark:border-zinc-800 text-center">
-            <p className="text-[11px] text-zinc-500 leading-relaxed">
-              Belum punya akun admin? Buat akun di tab <strong>Authentication &gt; Users</strong> pada dashboard Supabase Anda.
-            </p>
+          {/* Card Footer: Security Note */}
+          <div className="mt-6 pt-4 border-t-2 border-dashed border-zinc-200 dark:border-zinc-800 flex items-center justify-center gap-2 text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+            <ShieldCheck className="w-4 h-4 text-emerald-500 shrink-0" />
+            <span>Supabase Authenticated & Encrypted</span>
           </div>
+        </div>
+
+        {/* Helpful Tip Sub-Card */}
+        <div className="mt-4 p-3.5 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white/70 dark:bg-zinc-900/50 backdrop-blur-sm text-center">
+          <p className="text-[11px] font-mono text-zinc-500 dark:text-zinc-400">
+            Akun admin dikelola melalui tab{" "}
+            <span className="text-zinc-800 dark:text-zinc-200 font-bold">Authentication &gt; Users</span>{" "}
+            pada dashboard Supabase Anda.
+          </p>
         </div>
       </div>
     </div>

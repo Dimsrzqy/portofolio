@@ -55,8 +55,10 @@ export function Hero() {
                 <ArrowDown className="w-4 h-4" />
               </Link>
               <a
-                href={profileData.resumeUrl}
-                download
+                href="/api/cv"
+                target="_blank"
+                rel="noopener noreferrer"
+                download="CV_Dimas_Rizqy.pdf"
                 className="comic-panel-sm w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-950 dark:text-zinc-100 font-bold text-sm uppercase tracking-wider min-h-[44px]"
               >
                 <FileDown className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />

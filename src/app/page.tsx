@@ -7,9 +7,11 @@ import { EducationExperience } from "@/components/sections/education-experience"
 import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 import { getPublishedProjects } from "@/lib/supabase/projects";
+import { getChronicleData } from "@/lib/supabase/chronicle";
 
 export default async function HomePage() {
   const projects = await getPublishedProjects();
+  const chronicle = await getChronicleData();
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -19,7 +21,10 @@ export default async function HomePage() {
         <About />
         <Skills />
         <Projects projects={projects} />
-        <EducationExperience />
+        <EducationExperience
+          education={chronicle.education}
+          experience={chronicle.experience}
+        />
         <Contact />
       </main>
       <Footer />

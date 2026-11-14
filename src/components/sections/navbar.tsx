@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { profileData } from "@/data/profile";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
-import { Menu, X, ArrowUpRight, Zap } from "lucide-react";
+import { Menu, X } from "lucide-react";
 
 const navLinks = [
   { href: "#about", label: "Origin" },
@@ -67,17 +67,9 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Right actions: Theme toggle + Contact CTA */}
+        {/* Right actions: Theme toggle */}
         <div className="hidden sm:flex items-center gap-3">
           <ThemeToggle />
-          <Link
-            href="#contact"
-            className="comic-btn inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider px-4 py-2 rounded-lg bg-zinc-950 text-white hover:bg-zinc-800 dark:bg-indigo-600 dark:text-white dark:hover:bg-indigo-500 transition-all min-h-[44px] sm:min-h-9 items-center justify-center"
-          >
-            <Zap className="w-3.5 h-3.5 fill-current text-indigo-400 dark:text-amber-300" />
-            <span>Connect</span>
-            <ArrowUpRight className="w-3.5 h-3.5 opacity-80" />
-          </Link>
         </div>
 
         {/* Mobile menu button */}

@@ -1,7 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "lenis/dist/lenis.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
+import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
 import { profileData } from "@/data/profile";
 
 const geistSans = Geist({
@@ -85,7 +87,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <SmoothScrollProvider>{children}</SmoothScrollProvider>
         </ThemeProvider>
       </body>
     </html>

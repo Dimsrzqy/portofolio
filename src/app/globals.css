@@ -47,9 +47,7 @@
   --ring: #6366f1;
 }
 
-html {
-  scroll-behavior: smooth;
-}
+/* Smooth scroll managed by Lenis */
 
 body {
   background-color: var(--background);

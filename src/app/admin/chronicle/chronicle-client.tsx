@@ -21,6 +21,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 const SUGGESTED_SKILLS = [
   "Next.js",
@@ -65,6 +66,11 @@ export function ChronicleClient({ initialData }: { initialData: ChronicleData })
 
   // Submission State
   const [isSaving, setIsSaving] = useState(false);
+  const [itemToDelete, setItemToDelete] = useState<{
+    type: "education" | "experience";
+    index: number;
+    title: string;
+  } | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
@@ -118,10 +124,10 @@ export function ChronicleClient({ initialData }: { initialData: ChronicleData })
     setIsModalOpen(true);
   };
 
-  // Delete item
-  const handleDelete = async (type: "education" | "experience", index: number) => {
-    const title = type === "education" ? data.education[index].institution : data.experience[index].role;
-    if (!window.confirm(`Yakin ingin menghapus "${title}"?`)) return;
+  // Delete item with confirmation
+  const confirmDeleteItem = async () => {
+    if (!itemToDelete) return;
+    const { type, index } = itemToDelete;
 
     setIsSaving(true);
     let updatedData: ChronicleData;
@@ -144,6 +150,7 @@ export function ChronicleClient({ initialData }: { initialData: ChronicleData })
       setSuccessMsg("Item berhasil dihapus dan beranda telah diperbarui!");
       setTimeout(() => setSuccessMsg(null), 4000);
       router.refresh();
+      setItemToDelete(null);
     } else {
       setErrorMsg(res.message || "Gagal menghapus item.");
     }
@@ -342,7 +349,13 @@ export function ChronicleClient({ initialData }: { initialData: ChronicleData })
                     <button
                       type="button"
                       disabled={isSaving}
-                      onClick={() => handleDelete("education", idx)}
+                      onClick={() =>
+                        setItemToDelete({
+                          type: "education",
+                          index: idx,
+                          title: item.institution,
+                        })
+                      }
                       className="comic-panel-sm inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-zinc-800 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border-2 border-zinc-950 dark:border-zinc-700 transition-colors min-h-[38px] min-w-[38px] cursor-pointer"
                       title="Hapus item"
                     >
@@ -430,7 +443,13 @@ export function ChronicleClient({ initialData }: { initialData: ChronicleData })
                     <button
                       type="button"
                       disabled={isSaving}
-                      onClick={() => handleDelete("experience", idx)}
+                      onClick={() =>
+                        setItemToDelete({
+                          type: "experience",
+                          index: idx,
+                          title: `${item.role} @ ${item.company}`,
+                        })
+                      }
                       className="comic-panel-sm inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-zinc-800 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border-2 border-zinc-950 dark:border-zinc-700 transition-colors min-h-[38px] min-w-[38px] cursor-pointer"
                       title="Hapus item"
                     >
@@ -714,6 +733,24 @@ export function ChronicleClient({ initialData }: { initialData: ChronicleData })
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal for Delete Chronicle Item */}
+      <ConfirmModal
+        isOpen={!!itemToDelete}
+        onClose={() => setItemToDelete(null)}
+        onConfirm={confirmDeleteItem}
+        isLoading={isSaving}
+        title="Hapus Riwayat?"
+        description={
+          <>
+            Data riwayat <span className="font-bold text-zinc-950 dark:text-zinc-100">&quot;{itemToDelete?.title}&quot;</span> akan dihapus dari timeline portfolio. Tindakan ini tidak dapat dibatalkan.
+          </>
+        }
+        confirmText="Ya, Hapus Data"
+        cancelText="Batal"
+        variant="danger"
+        icon="trash"
+      />
     </div>
   );
 }

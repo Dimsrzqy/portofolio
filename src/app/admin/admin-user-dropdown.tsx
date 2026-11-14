@@ -9,6 +9,7 @@ import {
   ExternalLink,
   LogOut,
 } from "lucide-react";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 interface AdminUserDropdownProps {
   initialEmail?: string;
@@ -21,6 +22,7 @@ export function AdminUserDropdown({
   const [isOpen, setIsOpen] = useState(false);
   const [email, setEmail] = useState(initialEmail);
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [showLogoutModal, setShowLogoutModal] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   // Fetch actual logged in user
@@ -136,18 +138,39 @@ export function AdminUserDropdown({
             <button
               type="button"
               disabled={isSigningOut}
-              onClick={handleSignOut}
+              onClick={() => {
+                setIsOpen(false);
+                setShowLogoutModal(true);
+              }}
               className="w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-bold text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer min-h-[44px]"
             >
               <div className="flex items-center gap-2.5">
                 <LogOut className="w-4 h-4" />
-                <span>{isSigningOut ? "Signing Out..." : "Log Out"}</span>
+                <span>Log Out</span>
               </div>
               <span className="text-[10px] font-mono opacity-60">End Session</span>
             </button>
           </div>
         </div>
       )}
+
+      {/* Confirmation Modal for Logout */}
+      <ConfirmModal
+        isOpen={showLogoutModal}
+        onClose={() => setShowLogoutModal(false)}
+        onConfirm={handleSignOut}
+        isLoading={isSigningOut}
+        title="Konfirmasi Logout"
+        description={
+          <>
+            Apakah Anda yakin ingin keluar dari sesi <span className="font-bold text-zinc-950 dark:text-zinc-100">Admin Studio</span>? Anda harus login kembali untuk mengelola konten portfolio.
+          </>
+        }
+        confirmText="Ya, Logout"
+        cancelText="Batal"
+        variant="warning"
+        icon="logout"
+      />
     </div>
   );
 }

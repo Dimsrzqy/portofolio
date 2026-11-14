@@ -24,6 +24,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 export function ProjectListClient({ initialProjects }: { initialProjects: Project[] }) {
   const router = useRouter();
@@ -31,17 +32,18 @@ export function ProjectListClient({ initialProjects }: { initialProjects: Projec
   const [searchQuery, setSearchQuery] = useState("");
   const [filterTab, setFilterTab] = useState<"all" | "published" | "draft" | "featured">("all");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [projectToDelete, setProjectToDelete] = useState<{ id: string; title: string } | null>(null);
   const [isToggling, setIsToggling] = useState<string | null>(null);
 
-  const handleDelete = async (id: string, title: string) => {
-    if (!window.confirm(`Yakin ingin menghapus project "${title}"? Tindakan ini juga akan membersihkan file cover di Supabase Storage.`)) {
-      return;
-    }
+  const confirmDeleteProject = async () => {
+    if (!projectToDelete) return;
+    const { id } = projectToDelete;
     setIsDeleting(id);
     const res = await deleteProjectAction(id);
     if (res.success) {
       setProjects((prev) => prev.filter((p) => p.id !== id));
       router.refresh();
+      setProjectToDelete(null);
     } else {
       alert(`Gagal menghapus: ${res.message}`);
     }
@@ -366,7 +368,7 @@ export function ProjectListClient({ initialProjects }: { initialProjects: Projec
                         <button
                           type="button"
                           disabled={isDeleting === project.id}
-                          onClick={() => handleDelete(project.id, project.title)}
+                          onClick={() => setProjectToDelete({ id: project.id, title: project.title })}
                           className="comic-panel-sm w-8 h-8 rounded-lg bg-white dark:bg-zinc-800 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border-2 border-zinc-950 dark:border-zinc-700 transition-colors cursor-pointer flex items-center justify-center"
                           title="Hapus project"
                         >
@@ -385,6 +387,24 @@ export function ProjectListClient({ initialProjects }: { initialProjects: Projec
           </table>
         </div>
       </div>
+
+      {/* Confirmation Modal for Delete Project */}
+      <ConfirmModal
+        isOpen={!!projectToDelete}
+        onClose={() => setProjectToDelete(null)}
+        onConfirm={confirmDeleteProject}
+        isLoading={isDeleting === projectToDelete?.id}
+        title="Hapus Project?"
+        description={
+          <>
+            Project <span className="font-bold text-zinc-950 dark:text-zinc-100">&quot;{projectToDelete?.title}&quot;</span> beserta file cover di Supabase Storage akan dihapus secara permanen. Tindakan ini tidak dapat dibatalkan.
+          </>
+        }
+        confirmText="Ya, Hapus Project"
+        cancelText="Batal"
+        variant="danger"
+        icon="trash"
+      />
     </div>
   );
 }

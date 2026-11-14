@@ -19,22 +19,25 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { ConfirmModal } from "@/components/ui/confirm-modal";
 
 export function MessagesClient({ initialMessages }: { initialMessages: Message[] }) {
   const router = useRouter();
   const [messages, setMessages] = useState(initialMessages);
   const [searchQuery, setSearchQuery] = useState("");
   const [isDeleting, setIsDeleting] = useState<string | null>(null);
+  const [messageToDelete, setMessageToDelete] = useState<{ id: string; name: string } | null>(null);
   const [copiedId, setCopiedId] = useState<string | null>(null);
 
-  const handleDelete = async (id: string, name: string) => {
-    if (!window.confirm(`Yakin ingin menghapus pesan dari "${name}"?`)) return;
-
+  const confirmDeleteMessage = async () => {
+    if (!messageToDelete) return;
+    const { id } = messageToDelete;
     setIsDeleting(id);
     const res = await deleteMessageAction(id);
     if (res.success) {
       setMessages((prev) => prev.filter((m) => m.id !== id));
       router.refresh();
+      setMessageToDelete(null);
     } else {
       alert(`Gagal menghapus pesan: ${res.message}`);
     }
@@ -214,7 +217,7 @@ export function MessagesClient({ initialMessages }: { initialMessages: Message[]
                   <button
                     type="button"
                     disabled={isDeleting === item.id}
-                    onClick={() => handleDelete(item.id, item.name)}
+                    onClick={() => setMessageToDelete({ id: item.id, name: item.name })}
                     className="comic-panel-sm inline-flex items-center justify-center w-9 h-9 rounded-xl bg-white dark:bg-zinc-800 text-zinc-400 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 border-2 border-zinc-950 dark:border-zinc-700 transition-colors cursor-pointer min-h-[38px] min-w-[38px]"
                     title="Hapus pesan"
                   >
@@ -237,6 +240,24 @@ export function MessagesClient({ initialMessages }: { initialMessages: Message[]
           ))}
         </div>
       )}
+
+      {/* Confirmation Modal for Delete Message */}
+      <ConfirmModal
+        isOpen={!!messageToDelete}
+        onClose={() => setMessageToDelete(null)}
+        onConfirm={confirmDeleteMessage}
+        isLoading={isDeleting === messageToDelete?.id}
+        title="Hapus Pesan?"
+        description={
+          <>
+            Pesan dari <span className="font-bold text-zinc-950 dark:text-zinc-100">&quot;{messageToDelete?.name}&quot;</span> akan dihapus secara permanen dari database. Tindakan ini tidak dapat dibatalkan.
+          </>
+        }
+        confirmText="Ya, Hapus Pesan"
+        cancelText="Batal"
+        variant="danger"
+        icon="trash"
+      />
     </div>
   );
 }

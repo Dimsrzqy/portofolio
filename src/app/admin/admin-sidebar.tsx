@@ -9,6 +9,7 @@ import { AdminUserDropdown } from "./admin-user-dropdown";
 import {
   LayoutDashboard,
   FolderGit2,
+  User,
   GraduationCap,
   Mail,
   Menu,
@@ -38,6 +39,13 @@ export function AdminSidebar() {
       label: "Projects",
       badge: "CMS",
       icon: FolderGit2,
+      exact: false,
+    },
+    {
+      href: "/admin/about",
+      label: "About & Bio",
+      badge: "BIO",
+      icon: User,
       exact: false,
     },
     {

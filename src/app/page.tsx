@@ -8,17 +8,19 @@ import { Contact } from "@/components/sections/contact";
 import { Footer } from "@/components/sections/footer";
 import { getPublishedProjects } from "@/lib/supabase/projects";
 import { getChronicleData } from "@/lib/supabase/chronicle";
+import { getAboutData } from "@/lib/supabase/about";
 
 export default async function HomePage() {
   const projects = await getPublishedProjects();
   const chronicle = await getChronicleData();
+  const about = await getAboutData();
 
   return (
     <div className="flex min-h-screen flex-col">
       <Navbar />
       <main className="flex-1">
         <Hero />
-        <About />
+        <About data={about} />
         <Skills />
         <Projects projects={projects} />
         <EducationExperience

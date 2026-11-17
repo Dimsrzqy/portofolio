@@ -5,8 +5,33 @@ import Image from "next/image";
 import { profileData } from "@/data/profile";
 import { MapPin, GraduationCap, Bookmark } from "lucide-react";
 import { motion } from "framer-motion";
+import { AboutData } from "@/types";
 
-export function About() {
+interface AboutProps {
+  data?: AboutData;
+}
+
+export function About({ data }: AboutProps) {
+  const name = data?.name || profileData.name;
+  const location = data?.location || profileData.location;
+  const photoUrl =
+    data?.photoUrl ||
+    "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80";
+  const stickerText = data?.stickerText || "ORIGIN FILE";
+  const badge = data?.badge || "ENGINEER PROFILE";
+  const chapterLabel = data?.chapterLabel || "CHAPTER 01 // ORIGIN & PHILOSOPHY";
+  const title = data?.title || "Engineering with purpose, precision, and simplicity.";
+  const bioParagraph1 =
+    data?.bioParagraph1 ||
+    "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.";
+  const bioParagraph2 =
+    data?.bioParagraph2 ||
+    "My approach combines solid software engineering fundamentals with keen attention to user ergonomics and clean code. Whether architecting database models or fine-tuning micro-interactions, I prioritize code readability, maintainability, and end-user performance.";
+  const academicRole = data?.academicRole || "Academic Affiliation";
+  const academicInstitution =
+    data?.academicInstitution || "Informatics Management, Politeknik Negeri Jember";
+  const stats = data?.stats && data.stats.length > 0 ? data.stats : profileData.stats;
+
   return (
     <section id="about" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -22,13 +47,13 @@ export function About() {
             <div className="relative max-w-sm mx-auto lg:max-w-none">
               {/* Comic sticker pin */}
               <div className="absolute -top-3.5 -right-2 bg-indigo-600 text-white font-mono text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-md border-2 border-zinc-950 dark:border-white shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_#ffffff] z-20 rotate-3">
-                ORIGIN FILE
+                {stickerText}
               </div>
 
               <div className="comic-panel relative rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 aspect-4/5">
                 <Image
-                  src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80"
-                  alt={`Portrait of ${profileData.name}`}
+                  src={photoUrl}
+                  alt={`Portrait of ${name}`}
                   fill
                   className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
                   sizes="(max-width: 768px) 100vw, 400px"
@@ -37,12 +62,12 @@ export function About() {
                 <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-transparent" />
                 <div className="absolute bottom-4 left-4 right-4 text-white">
                   <div className="inline-block px-2 py-0.5 bg-indigo-600 text-[10px] font-bold uppercase rounded-sm mb-1">
-                    ENGINEER PROFILE
+                    {badge}
                   </div>
-                  <p className="font-black text-base tracking-tight">{profileData.name}</p>
+                  <p className="font-black text-base tracking-tight">{name}</p>
                   <p className="text-xs text-zinc-300 flex items-center gap-1.5 mt-0.5 font-medium">
                     <MapPin className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{profileData.location}</span>
+                    <span>{location}</span>
                   </p>
                 </div>
               </div>
@@ -60,18 +85,16 @@ export function About() {
             {/* Comic Chapter Header */}
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4 self-start">
               <Bookmark className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span>CHAPTER 01 // ORIGIN & PHILOSOPHY</span>
+              <span>{chapterLabel}</span>
             </div>
 
             <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-zinc-950 dark:text-white mb-6 leading-tight">
-              Engineering with purpose, precision, and simplicity.
+              {title}
             </h2>
 
             <div className="space-y-4 text-zinc-700 dark:text-zinc-300 text-base leading-relaxed mb-8">
-              <p>{profileData.bio}</p>
-              <p>
-                My approach combines strong software design principles with a deep attention to user ergonomics. Whether architecting database models or fine-tuning micro-interactions, I prioritize code readability, maintainability, and end-user performance.
-              </p>
+              <p>{bioParagraph1}</p>
+              <p>{bioParagraph2}</p>
             </div>
 
             {/* Comic Narrator Box for Academic Base */}
@@ -79,15 +102,15 @@ export function About() {
               <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0" />
               <div>
                 <span className="font-bold text-zinc-950 dark:text-white uppercase font-mono text-xs block text-indigo-600 dark:text-indigo-400">
-                  Academic Affiliation
+                  {academicRole}
                 </span>
-                <span>Informatics Management, Politeknik Negeri Jember</span>
+                <span>{academicInstitution}</span>
               </div>
             </div>
 
             {/* 3 Comic Quick Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {profileData.stats.map((stat, i) => (
+              {stats.map((stat, i) => (
                 <div
                   key={stat.label}
                   className={`comic-panel-sm p-4 rounded-xl bg-white dark:bg-zinc-900 ${

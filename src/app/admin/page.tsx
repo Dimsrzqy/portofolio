@@ -12,10 +12,10 @@ import {
   Clock,
   Sparkles,
   Database,
-  ExternalLink,
   Shield,
   Layers,
   ArrowRight,
+  User,
 } from "lucide-react";
 
 export default async function AdminOverviewPage() {
@@ -44,19 +44,18 @@ export default async function AdminOverviewPage() {
 
           <div className="flex flex-wrap items-center gap-3">
             <Link
+              href="/admin/about"
+              className="comic-panel-sm inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-white dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-bold hover:bg-zinc-100 dark:hover:bg-zinc-700 active:translate-x-0.5 active:translate-y-0.5 transition-all min-h-[44px]"
+            >
+              <User className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span>Edit About & Bio</span>
+            </Link>
+            <Link
               href="/admin/projects/new"
               className="comic-btn inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 active:translate-x-0.5 active:translate-y-0.5 transition-all min-h-[44px]"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
               <span>Add New Project</span>
-            </Link>
-            <Link
-              href="/"
-              target="_blank"
-              className="comic-panel-sm inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-white text-xs font-bold hover:bg-zinc-200 dark:hover:bg-zinc-700 active:translate-x-0.5 active:translate-y-0.5 transition-all min-h-[44px]"
-            >
-              <ExternalLink className="w-4 h-4" />
-              <span>Live Site</span>
             </Link>
           </div>
         </div>

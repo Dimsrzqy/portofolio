@@ -1,23 +1,24 @@
 import { EducationItem, ExperienceItem, SkillCategory, StatItem } from "@/types";
 
 export const profileData = {
-  name: "Dimas",
+  name: "Dimas Rizqy Ilhami",
   initials: "D",
   badge: "Informatics Management Student at Politeknik Negeri Jember",
   headline: "Hi, I'm Dimas",
   subtitle: "Web Developer & Software Engineer",
   professionalTitle:
     "Web Developer & Software Engineer | Informatics Management Student at Politeknik Negeri Jember",
-  bio: "Passionate developer focused on crafting clean, accessible, and high-performance digital products. Currently studying Informatics Management at Politeknik Negeri Jember while building scalable web applications with modern architectures.",
+  bio: "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.",
   avatarUrl: "/avatar.png",
   resumeUrl: "/files/cv.pdf",
   email: "dimas@example.com",
+  whatsapp: "6285645819510",
   location: "Jember, Indonesia",
   socials: {
-    github: "https://github.com",
-    linkedin: "https://linkedin.com",
-    twitter: "https://twitter.com",
-    instagram: "https://instagram.com",
+    github: "https://github.com/Dimsrzqy",
+    linkedin: "https://www.linkedin.com/in/dimas-rizqy-ilhami-244294440/",
+    twitter: "",
+    instagram: "https://www.instagram.com/dimsrzqy_/",
   },
   stats: [
     {

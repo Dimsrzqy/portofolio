@@ -68,49 +68,59 @@ export function Hero() {
 
             {/* Social Icons */}
             <div className="flex items-center gap-3 text-zinc-800 dark:text-zinc-200">
-              <a
-                href={profileData.socials.github}
-                target="_blank"
-                rel="noreferrer"
-                className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                aria-label="GitHub Profile"
-              >
-                <GithubIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={profileData.socials.linkedin}
-                target="_blank"
-                rel="noreferrer"
-                className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                aria-label="LinkedIn Profile"
-              >
-                <LinkedinIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={profileData.socials.twitter}
-                target="_blank"
-                rel="noreferrer"
-                className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                aria-label="Twitter Profile"
-              >
-                <TwitterIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={profileData.socials.instagram}
-                target="_blank"
-                rel="noreferrer"
-                className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                aria-label="Instagram Profile"
-              >
-                <InstagramIcon className="w-4 h-4" />
-              </a>
-              <a
-                href={`mailto:${profileData.email}`}
-                className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                aria-label="Email Me"
-              >
-                <Mail className="w-4 h-4" />
-              </a>
+              {profileData.socials.github && (
+                <a
+                  href={profileData.socials.github}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                  aria-label="GitHub Profile"
+                >
+                  <GithubIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profileData.socials.linkedin && (
+                <a
+                  href={profileData.socials.linkedin}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                  aria-label="LinkedIn Profile"
+                >
+                  <LinkedinIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profileData.socials.instagram && (
+                <a
+                  href={profileData.socials.instagram}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                  aria-label="Instagram Profile"
+                >
+                  <InstagramIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profileData.socials.twitter && (
+                <a
+                  href={profileData.socials.twitter}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                  aria-label="Twitter Profile"
+                >
+                  <TwitterIcon className="w-4 h-4" />
+                </a>
+              )}
+              {profileData.email && (
+                <a
+                  href={`mailto:${profileData.email}`}
+                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                  aria-label="Email Me"
+                >
+                  <Mail className="w-4 h-4" />
+                </a>
+              )}
             </div>
           </motion.div>
 

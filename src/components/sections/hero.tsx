@@ -3,12 +3,14 @@
 import React from "react";
 import Link from "next/link";
 import { profileData } from "@/data/profile";
+import { useLanguage } from "@/context/language-context";
 import { Hero3D } from "./hero-3d";
 import { ArrowDown, FileDown, Mail, Sparkles } from "lucide-react";
 import { GithubIcon, LinkedinIcon, TwitterIcon, InstagramIcon } from "@/components/ui/icons";
 import { motion } from "framer-motion";
 
 export function Hero() {
+  const { t } = useLanguage();
   return (
     <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden comic-halftone">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -23,13 +25,13 @@ export function Hero() {
             {/* Comic Speech-Bubble Badge */}
             <div className="comic-speech-bubble inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 text-xs font-bold uppercase tracking-wider mb-7">
               <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              <span>{profileData.badge}</span>
+              <span>{t.hero.badge}</span>
             </div>
 
             {/* Headline */}
             <div className="relative mb-3">
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-zinc-950 dark:text-white leading-[1.05]">
-                {profileData.headline}
+                {t.hero.headlinePrefix} {profileData.name}
                 <span className="text-indigo-600 dark:text-indigo-400">!</span>
               </h1>
             </div>
@@ -37,12 +39,12 @@ export function Hero() {
             {/* Subtitle */}
             <h2 className="text-xl sm:text-2xl font-bold text-zinc-700 dark:text-zinc-300 mb-6 flex items-center gap-2">
               <span className="inline-block w-3 h-3 bg-indigo-600 dark:bg-indigo-400 rotate-45" />
-              <span>{profileData.subtitle}</span>
+              <span>{t.hero.subtitle}</span>
             </h2>
 
             {/* Bio summary */}
             <p className="text-base sm:text-lg text-zinc-600 dark:text-zinc-400 max-w-xl leading-relaxed mb-8 font-medium">
-              Crafting modern, accessible web applications with clean architecture, robust type systems, and delightful tactile interactions.
+              {t.hero.bio}
             </p>
 
             {/* CTA Buttons */}
@@ -51,7 +53,7 @@ export function Hero() {
                 href="#projects"
                 className="comic-btn w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-bold text-sm uppercase tracking-wider shadow-[3px_3px_0px_0px_#09090b] dark:shadow-[3px_3px_0px_0px_#ffffff] min-h-[44px]"
               >
-                <span>View Projects</span>
+                <span>{t.hero.viewProjects}</span>
                 <ArrowDown className="w-4 h-4" />
               </Link>
               <a
@@ -62,7 +64,7 @@ export function Hero() {
                 className="comic-panel-sm w-full sm:w-auto inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-white dark:bg-zinc-900 hover:bg-zinc-100 dark:hover:bg-zinc-800 text-zinc-950 dark:text-zinc-100 font-bold text-sm uppercase tracking-wider min-h-[44px]"
               >
                 <FileDown className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <span>Download CV</span>
+                <span>{t.hero.downloadCv}</span>
               </a>
             </div>
 

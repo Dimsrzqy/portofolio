@@ -4,6 +4,7 @@ import "./globals.css";
 import "lenis/dist/lenis.css";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { SmoothScrollProvider } from "@/components/providers/smooth-scroll-provider";
+import { LanguageProvider } from "@/context/language-context";
 import { profileData } from "@/data/profile";
 
 const geistSans = Geist({
@@ -87,7 +88,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          <LanguageProvider>
+            <SmoothScrollProvider>{children}</SmoothScrollProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </body>
     </html>

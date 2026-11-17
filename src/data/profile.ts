@@ -11,8 +11,7 @@ export const profileData = {
   bio: "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.",
   avatarUrl: "/avatar.png",
   resumeUrl: "/files/cv.pdf",
-  email: "dimas@example.com",
-  whatsapp: "6285645819510",
+  email: "dimasrizqy021@gmail.com",
   location: "Jember, Indonesia",
   socials: {
     github: "https://github.com/Dimsrzqy",

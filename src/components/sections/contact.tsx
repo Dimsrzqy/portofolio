@@ -3,11 +3,13 @@
 import React, { useActionState, useRef, useEffect } from "react";
 import { submitContactMessage, type ContactActionResult } from "@/app/actions/contact";
 import { profileData } from "@/data/profile";
-import { Mail, Send, CheckCircle2, AlertCircle, Radio, ExternalLink, MessageSquare } from "lucide-react";
+import { useLanguage } from "@/context/language-context";
+import { Mail, Send, CheckCircle2, AlertCircle, Radio } from "lucide-react";
 import { GithubIcon, LinkedinIcon, TwitterIcon, InstagramIcon } from "@/components/ui/icons";
 import { motion } from "framer-motion";
 
 export function Contact() {
+  const { t } = useLanguage();
   const [state, formAction, isPending] = useActionState<ContactActionResult | null, FormData>(
     submitContactMessage,
     null
@@ -16,18 +18,10 @@ export function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state?.success) {
-      if (formRef.current) {
-        formRef.current.reset();
-      }
-      if (state.whatsappUrl) {
-        const timer = setTimeout(() => {
-          window.open(state.whatsappUrl, "_blank", "noopener,noreferrer");
-        }, 200);
-        return () => clearTimeout(timer);
-      }
+    if (state?.success && formRef.current) {
+      formRef.current.reset();
     }
-  }, [state]);
+  }, [state?.success]);
 
   return (
     <section id="contact" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800">
@@ -37,15 +31,15 @@ export function Contact() {
           <div className="lg:col-span-5">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-850 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4">
               <Radio className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400 animate-pulse" />
-              <span>TRANSMISSION // OPEN FREQUENCY</span>
+              <span>{t.contact.chapter}</span>
             </div>
 
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-white mb-4">
-              Get in Touch
+              {t.contact.title}
             </h2>
 
             <p className="text-base text-zinc-600 dark:text-zinc-400 mb-8 leading-relaxed font-medium">
-              Have a mission in mind, an engineering internship opportunity, or simply want to talk architecture? Transmit your signal below.
+              {t.contact.description}
             </p>
 
             <div className="space-y-4 mb-8">
@@ -58,39 +52,18 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="text-[11px] font-mono uppercase font-bold text-indigo-600 dark:text-indigo-400">
-                    Direct Email Dispatch
+                    {t.contact.directDispatch}
                   </p>
                   <p className="text-sm font-black text-zinc-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                     {profileData.email}
                   </p>
                 </div>
               </a>
-
-              {profileData.whatsapp && (
-                <a
-                  href={`https://wa.me/${profileData.whatsapp}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="comic-panel-sm flex items-center gap-3.5 p-4 rounded-xl bg-white dark:bg-zinc-900 hover:border-emerald-600 dark:hover:border-emerald-400 transition-colors group"
-                >
-                  <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-2 border-zinc-950 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#09090b]">
-                    <MessageSquare className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <p className="text-[11px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400">
-                      WhatsApp Instant Chat
-                    </p>
-                    <p className="text-sm font-black text-zinc-950 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-                      +62 856-4581-9510
-                    </p>
-                  </div>
-                </a>
-              )}
             </div>
 
             <div>
               <p className="text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 mb-3">
-                Signal Coordinates
+                {t.contact.signalCoordinates}
               </p>
               <div className="flex items-center gap-3">
                 {profileData.socials.github && (
@@ -151,29 +124,14 @@ export function Contact() {
           >
             <div className="comic-panel rounded-2xl bg-white dark:bg-zinc-900 p-6 sm:p-8">
               {state?.success && (
-                <div className="mb-6 p-4 rounded-xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 text-sm space-y-2.5 shadow-[2px_2px_0px_0px_#059669]">
-                  <div className="flex items-start gap-3">
-                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                    <div>
-                      <p className="font-bold">{state.message}</p>
-                      <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
-                        Pesan Anda juga otomatis tersimpan. Jika WhatsApp tidak terbuka secara otomatis, klik tombol di bawah:
-                      </p>
-                    </div>
+                <div className="mb-6 p-4 rounded-xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 text-sm flex items-start gap-3 shadow-[2px_2px_0px_0px_#059669]">
+                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                  <div>
+                    <p className="font-bold">{state.message}</p>
+                    <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
+                      Pesan Anda telah berhasil dikirim. Saya akan segera merespons melalui email Anda.
+                    </p>
                   </div>
-                  {state.whatsappUrl && (
-                    <div className="pt-1">
-                      <a
-                        href={state.whatsappUrl}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="comic-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all min-h-[40px]"
-                      >
-                        <span>Kirim via WhatsApp Sekarang</span>
-                        <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    </div>
-                  )}
                 </div>
               )}
 
@@ -190,14 +148,14 @@ export function Contact() {
                     htmlFor="name"
                     className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-200 mb-1.5"
                   >
-                    Your Identifier (Name) *
+                    {t.contact.nameLabel}
                   </label>
                   <input
                     type="text"
                     id="name"
                     name="name"
                     required
-                    placeholder="e.g. Alex Graham"
+                    placeholder={t.contact.namePlaceholder}
                     className="w-full px-4 py-2.5 rounded-lg border-2 border-zinc-950 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-all min-h-[44px] font-medium shadow-[1.5px_1.5px_0px_0px_#09090b]"
                   />
                   {state?.errors?.name && (
@@ -210,14 +168,14 @@ export function Contact() {
                     htmlFor="email"
                     className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-200 mb-1.5"
                   >
-                    Return Address (Email) *
+                    {t.contact.emailLabel}
                   </label>
                   <input
                     type="email"
                     id="email"
                     name="email"
                     required
-                    placeholder="alex@company.com"
+                    placeholder={t.contact.emailPlaceholder}
                     className="w-full px-4 py-2.5 rounded-lg border-2 border-zinc-950 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-all min-h-[44px] font-medium shadow-[1.5px_1.5px_0px_0px_#09090b]"
                   />
                   {state?.errors?.email && (
@@ -230,14 +188,14 @@ export function Contact() {
                     htmlFor="message"
                     className="block text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-200 mb-1.5"
                   >
-                    Dispatch Content (Message) *
+                    {t.contact.messageLabel}
                   </label>
                   <textarea
                     id="message"
                     name="message"
                     rows={4}
                     required
-                    placeholder="Describe your inquiry, project scope, or ideas..."
+                    placeholder={t.contact.messagePlaceholder}
                     className="w-full px-4 py-2.5 rounded-lg border-2 border-zinc-950 dark:border-zinc-700 bg-zinc-50 dark:bg-zinc-950 text-zinc-900 dark:text-white placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-sm transition-all resize-y font-medium shadow-[1.5px_1.5px_0px_0px_#09090b]"
                   />
                   {state?.errors?.message && (
@@ -251,10 +209,10 @@ export function Contact() {
                   className="comic-btn w-full inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-black text-sm uppercase tracking-wider shadow-[3px_3px_0px_0px_#09090b] dark:shadow-[3px_3px_0px_0px_#ffffff] disabled:opacity-50 min-h-[44px] cursor-pointer"
                 >
                   {isPending ? (
-                    <span>Transmitting Signal...</span>
+                    <span>{t.contact.sendingButton}</span>
                   ) : (
                     <>
-                      <span>Send Dispatch</span>
+                      <span>{t.contact.sendButton}</span>
                       <Send className="w-4 h-4" />
                     </>
                   )}

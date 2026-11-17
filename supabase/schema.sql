@@ -1,6 +1,7 @@
 -- ==============================================================================
--- PERSONAL PORTFOLIO DATABASE SCHEMA & POLICIES
+-- PERSONAL PORTFOLIO DATABASE SCHEMA & POLICIES (FULL SCRIPT)
 -- Target: Supabase (PostgreSQL)
+-- Aman dijalankan berulang kali (Idempotent / Drop If Exists)
 -- ==============================================================================
 
 -- 1. EXTENSIONS
@@ -36,27 +37,27 @@ alter table public.projects enable row level security;
 alter table public.messages enable row level security;
 
 -- 4. POLICIES FOR 'projects' TABLE
--- Public read access: Anyone can read published projects
+drop policy if exists "Public can view published projects" on public.projects;
 create policy "Public can view published projects"
   on public.projects
   for select
   using (is_published = true);
 
--- Admin read access: Authenticated users can view all projects (including drafts)
+drop policy if exists "Authenticated users can view all projects" on public.projects;
 create policy "Authenticated users can view all projects"
   on public.projects
   for select
   to authenticated
   using (true);
 
--- Admin insert access: Only authenticated users can insert projects
+drop policy if exists "Authenticated users can insert projects" on public.projects;
 create policy "Authenticated users can insert projects"
   on public.projects
   for insert
   to authenticated
   with check (true);
 
--- Admin update access: Only authenticated users can update projects
+drop policy if exists "Authenticated users can update projects" on public.projects;
 create policy "Authenticated users can update projects"
   on public.projects
   for update
@@ -64,87 +65,87 @@ create policy "Authenticated users can update projects"
   using (true)
   with check (true);
 
--- Admin delete access: Only authenticated users can delete projects
+drop policy if exists "Authenticated users can delete projects" on public.projects;
 create policy "Authenticated users can delete projects"
   on public.projects
   for delete
   to authenticated
   using (true);
 
-
 -- 5. POLICIES FOR 'messages' TABLE
--- Public insert access: Anyone can submit a contact message
+drop policy if exists "Public can insert contact messages" on public.messages;
 create policy "Public can insert contact messages"
   on public.messages
   for insert
   to anon, authenticated
   with check (true);
 
--- Admin read access: Only authenticated users can read received messages
+drop policy if exists "Authenticated users can view messages" on public.messages;
 create policy "Authenticated users can view messages"
   on public.messages
   for select
   to authenticated
   using (true);
 
--- Admin delete access: Only authenticated users can delete messages
+drop policy if exists "Authenticated users can delete messages" on public.messages;
 create policy "Authenticated users can delete messages"
   on public.messages
   for delete
   to authenticated
   using (true);
 
-
--- 6. STORAGE BUCKETS SETUP
--- Insert buckets into storage.buckets if they do not exist
+-- 6. STORAGE BUCKETS SETUP & COMPLETE STORAGE POLICIES
+-- Pastikan bucket storage terdaftar dan berstatus publik
 insert into storage.buckets (id, name, public)
 values 
   ('project-images', 'project-images', true),
-  ('files', 'files', true)
-on conflict (id) do nothing;
+  ('files', 'files', true),
+  ('portfolio-assets', 'portfolio-assets', true)
+on conflict (id) do update set public = true;
 
--- Storage Policies for 'project-images'
-create policy "Public can view project images"
+-- Bersihkan policy storage lama jika ada untuk mencegah konflik nama
+drop policy if exists "Public can view project images" on storage.objects;
+drop policy if exists "Authenticated users can upload project images" on storage.objects;
+drop policy if exists "Authenticated users can update project images" on storage.objects;
+drop policy if exists "Authenticated users can delete project images" on storage.objects;
+
+drop policy if exists "Public can view files" on storage.objects;
+drop policy if exists "Authenticated users can upload files" on storage.objects;
+drop policy if exists "Authenticated users can update files" on storage.objects;
+drop policy if exists "Authenticated users can delete files" on storage.objects;
+
+drop policy if exists "Allow public select on portfolio buckets" on storage.objects;
+drop policy if exists "Allow upload on portfolio buckets" on storage.objects;
+drop policy if exists "Allow update on portfolio buckets" on storage.objects;
+drop policy if exists "Allow delete on portfolio buckets" on storage.objects;
+
+-- 6.1. SELECT (Public read access untuk semua bucket portfolio)
+create policy "Allow public select on portfolio buckets"
   on storage.objects
   for select
-  using (bucket_id = 'project-images');
+  using (bucket_id in ('project-images', 'files', 'portfolio-assets'));
 
-create policy "Authenticated users can upload project images"
+-- 6.2. INSERT (Upload file untuk anon & authenticated)
+create policy "Allow upload on portfolio buckets"
   on storage.objects
   for insert
-  to authenticated
-  with check (bucket_id = 'project-images');
+  to anon, authenticated
+  with check (bucket_id in ('project-images', 'files', 'portfolio-assets'));
 
-create policy "Authenticated users can update project images"
+-- 6.3. UPDATE (Ganti / Upsert file)
+create policy "Allow update on portfolio buckets"
   on storage.objects
   for update
-  to authenticated
-  using (bucket_id = 'project-images');
+  to anon, authenticated
+  using (bucket_id in ('project-images', 'files', 'portfolio-assets'))
+  with check (bucket_id in ('project-images', 'files', 'portfolio-assets'));
 
-create policy "Authenticated users can delete project images"
+-- 6.4. DELETE (Hapus foto lama untuk hemat storage)
+create policy "Allow delete on portfolio buckets"
   on storage.objects
   for delete
-  to authenticated
-  using (bucket_id = 'project-images');
-
--- Storage Policies for 'files' (CV PDF, documents)
-create policy "Public can view files"
-  on storage.objects
-  for select
-  using (bucket_id = 'files');
-
-create policy "Authenticated users can upload files"
-  on storage.objects
-  for insert
-  to authenticated
-  with check (bucket_id = 'files');
-
-create policy "Authenticated users can delete files"
-  on storage.objects
-  for delete
-  to authenticated
-  using (bucket_id = 'files');
-
+  to anon, authenticated
+  using (bucket_id in ('project-images', 'files', 'portfolio-assets'));
 
 -- 7. INITIAL SAMPLE SEED DATA
 insert into public.projects (title, slug, description, content, tech_stack, image_url, demo_url, github_url, featured, is_published, sort_order)

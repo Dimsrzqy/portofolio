@@ -130,6 +130,23 @@ export function ProjectEditClient({ project }: { project: Project }) {
         data: { publicUrl },
       } = supabase.storage.from(bucketName).getPublicUrl(uploadRes.data.path);
 
+      // Hapus gambar lama dari Supabase Storage jika diganti untuk menghemat storage
+      if (imageUrl && imageUrl !== publicUrl && imageUrl.includes("/storage/v1/object/public/")) {
+        try {
+          const parts = imageUrl.split("/storage/v1/object/public/")[1];
+          if (parts) {
+            const slashIdx = parts.indexOf("/");
+            const bucket = parts.substring(0, slashIdx);
+            const oldPath = parts.substring(slashIdx + 1).split("?")[0];
+            if (bucket && oldPath) {
+              await supabase.storage.from(bucket).remove([oldPath]);
+            }
+          }
+        } catch {
+          // Abaikan jika gagal agar proses tetap lanjut
+        }
+      }
+
       setImageUrl(publicUrl);
       setCompressionResult({
         original: formatBytes(originalSize),

@@ -10,66 +10,82 @@ import {
   LayoutDashboard,
   FolderGit2,
   User,
+  Wrench,
   GraduationCap,
   Mail,
   Menu,
   X,
   ChevronRight,
+  type LucideIcon,
 } from "lucide-react";
 
-export function AdminSidebar() {
-  const pathname = usePathname() || "";
-  const [isOpen, setIsOpen] = useState(false);
+interface NavItem {
+  href: string;
+  label: string;
+  badge: string;
+  icon: LucideIcon;
+  exact: boolean;
+}
 
-  // Close mobile drawer on route change
-  useEffect(() => {
-    setIsOpen(false);
-  }, [pathname]);
+const navItems: NavItem[] = [
+  {
+    href: "/admin",
+    label: "Overview",
+    badge: "HQ",
+    icon: LayoutDashboard,
+    exact: true,
+  },
+  {
+    href: "/admin/projects",
+    label: "Projects",
+    badge: "CMS",
+    icon: FolderGit2,
+    exact: false,
+  },
+  {
+    href: "/admin/about",
+    label: "About & Bio",
+    badge: "BIO",
+    icon: User,
+    exact: false,
+  },
+  {
+    href: "/admin/skills",
+    label: "Skills & Arsenal",
+    badge: "TECH",
+    icon: Wrench,
+    exact: false,
+  },
+  {
+    href: "/admin/chronicle",
+    label: "Chronicle",
+    badge: "EDU",
+    icon: GraduationCap,
+    exact: false,
+  },
+  {
+    href: "/admin/messages",
+    label: "Messages",
+    badge: "Inbox",
+    icon: Mail,
+    exact: false,
+  },
+];
 
-  const navItems = [
-    {
-      href: "/admin",
-      label: "Overview",
-      badge: "HQ",
-      icon: LayoutDashboard,
-      exact: true,
-    },
-    {
-      href: "/admin/projects",
-      label: "Projects",
-      badge: "CMS",
-      icon: FolderGit2,
-      exact: false,
-    },
-    {
-      href: "/admin/about",
-      label: "About & Bio",
-      badge: "BIO",
-      icon: User,
-      exact: false,
-    },
-    {
-      href: "/admin/chronicle",
-      label: "Chronicle",
-      badge: "EDU",
-      icon: GraduationCap,
-      exact: false,
-    },
-    {
-      href: "/admin/messages",
-      label: "Messages",
-      badge: "Inbox",
-      icon: Mail,
-      exact: false,
-    },
-  ];
-
-  const NavContent = () => (
+function NavContent({
+  pathname,
+  onItemClick,
+}: {
+  pathname: string;
+  onItemClick?: () => void;
+}) {
+  return (
     <div className="flex flex-col h-full">
       {/* Top Header / Branding - Exactly aligned with navbar (h-16) */}
       <div className="h-16 flex items-center px-5 border-b-2 border-zinc-950 dark:border-zinc-800 bg-white dark:bg-zinc-900 shrink-0">
         <Link
           href="/admin"
+          onClick={onItemClick}
           className="flex items-center gap-3 group"
         >
           <div className="w-9 h-9 rounded-xl bg-indigo-600 text-white flex items-center justify-center font-black font-mono text-sm border-2 border-zinc-950 dark:border-zinc-700 shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_#ffffff] transition-transform group-hover:translate-x-0.5 group-hover:translate-y-0.5 group-hover:shadow-none shrink-0">
@@ -107,6 +123,7 @@ export function AdminSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onItemClick}
               className={`group flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-semibold transition-all min-h-[44px] ${
                 isActive
                   ? "comic-panel-sm bg-indigo-50 dark:bg-indigo-950/40 text-indigo-900 dark:text-indigo-200 border-2 border-zinc-950 dark:border-indigo-400 font-bold"
@@ -148,6 +165,16 @@ export function AdminSidebar() {
       </nav>
     </div>
   );
+}
+
+export function AdminSidebar() {
+  const pathname = usePathname() || "";
+  const [isOpen, setIsOpen] = useState(false);
+
+  // Close mobile drawer on route change
+  useEffect(() => {
+    setIsOpen(false);
+  }, [pathname]);
 
   return (
     <>
@@ -155,7 +182,7 @@ export function AdminSidebar() {
       {/* DESKTOP SIDEBAR (lg and up)                                 */}
       {/* ============================================================ */}
       <aside className="hidden lg:flex flex-col w-64 xl:w-72 fixed inset-y-0 left-0 z-40 bg-white dark:bg-zinc-900 border-r-2 border-zinc-950 dark:border-zinc-800 shadow-sm">
-        <NavContent />
+        <NavContent pathname={pathname} />
       </aside>
 
       {/* ============================================================ */}
@@ -217,7 +244,7 @@ export function AdminSidebar() {
             </div>
 
             <div className="flex-1 overflow-y-auto">
-              <NavContent />
+              <NavContent pathname={pathname} onItemClick={() => setIsOpen(false)} />
             </div>
           </div>
         </div>

@@ -1,4 +1,4 @@
-import { EducationItem, ExperienceItem, SkillCategory, StatItem } from "@/types";
+import { EducationItem, ExperienceItem, SkillCategory, StatItem, SkillsData } from "@/types";
 
 export const profileData = {
   name: "Dimas Rizqy Ilhami",
@@ -114,4 +114,12 @@ export const profileData = {
       ],
     },
   ] as SkillCategory[],
+};
+
+export const defaultSkillsData: SkillsData = {
+  chapterLabel: "CHAPTER 02 // ARSENAL",
+  title: "Skills & Weaponry",
+  description:
+    "A focused toolkit built around scalable web architectures, modern TypeScript conventions, and type-safe databases.",
+  categories: profileData.skills,
 };

@@ -3,6 +3,7 @@
 import React from "react";
 import Image from "next/image";
 import { profileData } from "@/data/profile";
+import { useLanguage } from "@/context/language-context";
 import { MapPin, GraduationCap, Bookmark } from "lucide-react";
 import { motion } from "framer-motion";
 import { AboutData } from "@/types";
@@ -12,25 +13,63 @@ interface AboutProps {
 }
 
 export function About({ data }: AboutProps) {
+  const { language, t } = useLanguage();
+  const isId = language === "id";
+
   const name = data?.name || profileData.name;
   const location = data?.location || profileData.location;
   const photoUrl =
     data?.photoUrl ||
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80";
-  const stickerText = data?.stickerText || "ORIGIN FILE";
-  const badge = data?.badge || "ENGINEER PROFILE";
-  const chapterLabel = data?.chapterLabel || "CHAPTER 01 // ORIGIN & PHILOSOPHY";
-  const title = data?.title || "Engineering with purpose, precision, and simplicity.";
+
+  const stickerText =
+    isId && (!data || data.stickerText === "ORIGIN FILE")
+      ? t.about.sticker
+      : data?.stickerText || t.about.sticker;
+
+  const badge =
+    isId && (!data || data.badge === "ENGINEER PROFILE")
+      ? t.about.profileTag
+      : data?.badge || t.about.profileTag;
+
+  const chapterLabel =
+    isId && (!data || data.chapterLabel === "CHAPTER 01 // ORIGIN & PHILOSOPHY")
+      ? t.about.chapter
+      : data?.chapterLabel || t.about.chapter;
+
+  const title =
+    isId && (!data || data.title.includes("Engineering with purpose"))
+      ? t.about.title
+      : data?.title || t.about.title;
+
   const bioParagraph1 =
-    data?.bioParagraph1 ||
-    "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.";
+    isId && (!data || data.bioParagraph1.includes("Passionate Web Developer"))
+      ? t.about.bio1
+      : data?.bioParagraph1 || t.about.bio1;
+
   const bioParagraph2 =
-    data?.bioParagraph2 ||
-    "My approach combines solid software engineering fundamentals with keen attention to user ergonomics and clean code. Whether architecting database models or fine-tuning micro-interactions, I prioritize code readability, maintainability, and end-user performance.";
-  const academicRole = data?.academicRole || "Academic Affiliation";
+    isId && (!data || data.bioParagraph2.includes("My approach combines"))
+      ? t.about.bio2
+      : data?.bioParagraph2 || t.about.bio2;
+
+  const academicRole =
+    isId && (!data || data.academicRole === "Academic Affiliation")
+      ? t.about.academicRole
+      : data?.academicRole || t.about.academicRole;
+
   const academicInstitution =
-    data?.academicInstitution || "Informatics Management, Politeknik Negeri Jember";
-  const stats = data?.stats && data.stats.length > 0 ? data.stats : profileData.stats;
+    isId && (!data || data.academicInstitution.includes("Informatics Management"))
+      ? t.about.academicInstitution
+      : data?.academicInstitution || t.about.academicInstitution;
+
+  const rawStats = data?.stats && data.stats.length > 0 ? data.stats : profileData.stats;
+  const stats = rawStats.map((st, i) => {
+    if (!isId) return st;
+    if (i === 0) return { ...st, label: t.about.stats.yearsCoding, description: t.about.stats.yearsDesc };
+    if (i === 1) return { ...st, label: t.about.stats.projectsCompleted, description: t.about.stats.projectsDesc };
+    if (i === 2) return { ...st, label: t.about.stats.cleanCodeFocus, description: t.about.stats.cleanCodeDesc };
+    return st;
+  });
 
   return (
     <section id="about" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800">

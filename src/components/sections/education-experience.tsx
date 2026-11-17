@@ -2,6 +2,7 @@
 
 import React from "react";
 import { profileData } from "@/data/profile";
+import { useLanguage } from "@/context/language-context";
 import { EducationItem, ExperienceItem } from "@/types";
 import { Briefcase, GraduationCap, Calendar, MapPin, Compass } from "lucide-react";
 import { motion } from "framer-motion";
@@ -15,6 +16,8 @@ export function EducationExperience({
   education = profileData.education,
   experience = profileData.experience,
 }: EducationExperienceProps) {
+  const { t } = useLanguage();
+
   return (
     <section id="experience" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/70 comic-halftone">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -22,13 +25,13 @@ export function EducationExperience({
         <div className="max-w-2xl mb-12 sm:mb-16">
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-850 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4">
             <Compass className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-            <span>CHAPTER 04 // LOGBOOK & MILESTONES</span>
+            <span>{t.experience.chapter}</span>
           </div>
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-white mb-4">
-            Education & Chronicle
+            {t.experience.title}
           </h2>
           <p className="text-base text-zinc-600 dark:text-zinc-400 font-medium">
-            My academic journey at Politeknik Negeri Jember alongside hands-on software development experience.
+            {t.experience.description}
           </p>
         </div>
 
@@ -37,7 +40,7 @@ export function EducationExperience({
           <div>
             <div className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700">
               <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span>Academy Track</span>
+              <span>{t.experience.academyTrack}</span>
             </div>
 
             <div className="relative pl-7 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[3px] before:bg-zinc-950 dark:before:bg-zinc-700">
@@ -100,7 +103,7 @@ export function EducationExperience({
           <div>
             <div className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700">
               <Briefcase className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-              <span>Work Experience</span>
+              <span>{t.experience.operationsTrack}</span>
             </div>
 
             <div className="relative pl-7 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[3px] before:bg-zinc-950 dark:before:bg-zinc-700">

@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Project } from "@/types";
+import { useLanguage } from "@/context/language-context";
 import { ExternalLink, ArrowUpRight, Crosshair, Star } from "lucide-react";
 import { GithubIcon } from "@/components/ui/icons";
 import { motion } from "framer-motion";
@@ -13,6 +14,9 @@ interface ProjectsProps {
 }
 
 export function Projects({ projects }: ProjectsProps) {
+  const { language, t } = useLanguage();
+  const isId = language === "id";
+
   return (
     <section id="projects" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -21,18 +25,18 @@ export function Projects({ projects }: ProjectsProps) {
           <div className="max-w-xl">
             <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-850 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4">
               <Crosshair className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span>CHAPTER 03 // FEATURED MISSIONS</span>
+              <span>{t.projects.chapter}</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-zinc-950 dark:text-white mb-4">
-              Selected Projects
+              {t.projects.title}
             </h2>
             <p className="text-base text-zinc-600 dark:text-zinc-400 font-medium">
-              A curated selection of web platforms, enterprise dashboards, and open tools crafted with tactile precision.
+              {t.projects.description}
             </p>
           </div>
 
           <div className="px-3 py-1 rounded-md border-2 border-zinc-950 dark:border-zinc-700 bg-white dark:bg-zinc-900 text-xs font-mono font-bold uppercase shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] self-start md:self-auto">
-            {projects.length} MISSION{projects.length > 1 ? "S" : ""} DEPLOYED
+            {projects.length} {isId ? t.projects.missionsDeployed : `MISSION${projects.length > 1 ? "S" : ""} DEPLOYED`}
           </div>
         </div>
 
@@ -101,7 +105,7 @@ export function Projects({ projects }: ProjectsProps) {
                     href={`/projects/${project.slug}`}
                     className="comic-btn inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-zinc-950 text-white dark:bg-white dark:text-zinc-950 text-xs font-bold uppercase tracking-wider transition-all min-h-[36px]"
                   >
-                    <span>Read Dossier</span>
+                    <span>{t.projects.detailsButton}</span>
                     <ArrowUpRight className="w-3.5 h-3.5" />
                   </Link>
 

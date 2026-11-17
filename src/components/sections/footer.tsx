@@ -2,9 +2,11 @@
 
 import React from "react";
 import { profileData } from "@/data/profile";
+import { useLanguage } from "@/context/language-context";
 import { Zap } from "lucide-react";
 
 export function Footer() {
+  const { t } = useLanguage();
   return (
     <footer className="border-t-2 border-zinc-950 dark:border-zinc-800 py-10 bg-white dark:bg-zinc-950">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
@@ -14,7 +16,7 @@ export function Footer() {
           </div>
           <div>
             <p className="text-xs font-bold text-zinc-900 dark:text-zinc-100">
-              © 2026 {profileData.name}. All rights reserved.
+              © 2026 {profileData.name}. {t.footer.rights}
             </p>
             <p className="text-[11px] font-mono text-zinc-500 flex items-center gap-1">
               <span>ENGINEERED WITH NEXT.JS 16 & SUPABASE</span>
@@ -24,7 +26,7 @@ export function Footer() {
         </div>
 
         <p className="text-xs font-mono text-zinc-500 dark:text-zinc-400">
-          DESIGNED FOR IMPACT // HIGH PERFORMANCE
+          {t.footer.tagline}
         </p>
       </div>
     </footer>

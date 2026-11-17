@@ -4,19 +4,22 @@ import * as React from "react";
 import Link from "next/link";
 import { profileData } from "@/data/profile";
 import { ThemeToggle } from "@/components/ui/theme-toggle";
+import { LanguageToggle } from "@/components/ui/language-toggle";
+import { useLanguage } from "@/context/language-context";
 import { Menu, X } from "lucide-react";
 
-const navLinks = [
-  { href: "#about", label: "Origin" },
-  { href: "#skills", label: "Arsenal" },
-  { href: "#projects", label: "Missions" },
-  { href: "#experience", label: "Logbook" },
-  { href: "#contact", label: "Contact" },
-];
-
 export function Navbar() {
+  const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+
+  const navLinks = [
+    { href: "#about", label: t.nav.origin },
+    { href: "#skills", label: t.nav.arsenal },
+    { href: "#projects", label: t.nav.missions },
+    { href: "#experience", label: t.nav.logbook },
+    { href: "#contact", label: t.nav.contact },
+  ];
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -67,13 +70,15 @@ export function Navbar() {
           ))}
         </nav>
 
-        {/* Right actions: Theme toggle */}
-        <div className="hidden sm:flex items-center gap-3">
+        {/* Right actions: Language & Theme toggle */}
+        <div className="hidden sm:flex items-center gap-2.5">
+          <LanguageToggle />
           <ThemeToggle />
         </div>
 
         {/* Mobile menu button */}
         <div className="flex items-center gap-2 md:hidden">
+          <LanguageToggle />
           <ThemeToggle />
           <button
             type="button"

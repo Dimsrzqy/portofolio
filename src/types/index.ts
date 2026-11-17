@@ -40,13 +40,22 @@ export interface ExperienceItem {
   skills: string[];
 }
 
+export interface SkillItem {
+  name: string;
+  level?: string;
+  icon?: string;
+}
+
 export interface SkillCategory {
-  category: 'Frontend' | 'Backend' | 'Database' | 'Tools';
-  skills: {
-    name: string;
-    level?: string;
-    icon?: string;
-  }[];
+  category: string;
+  skills: SkillItem[];
+}
+
+export interface SkillsData {
+  chapterLabel: string;
+  title: string;
+  description: string;
+  categories: SkillCategory[];
 }
 
 export interface StatItem {
@@ -59,7 +68,7 @@ export interface AboutData {
   chapterLabel: string;
   title: string;
   bioParagraph1: string;
-  bioParagraph2: string;
+  bioParagraph2?: string;
   academicRole: string;
   academicInstitution: string;
   name: string;

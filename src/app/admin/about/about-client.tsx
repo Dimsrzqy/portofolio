@@ -4,7 +4,12 @@ import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { AboutData, StatItem } from "@/types";
-import { updateAboutAction } from "@/app/actions/about";
+import {
+  updateAboutAction,
+  deleteSupabasePhotoAction,
+  cleanupOrphanProfilePhotosAction,
+  uploadProfilePhotoAction,
+} from "@/app/actions/about";
 import { createClient } from "@/lib/supabase/client";
 import { convertAndCompressToWebP, formatBytes } from "@/lib/utils/image-compression";
 import {
@@ -31,7 +36,18 @@ interface AboutClientProps {
 }
 
 export function AboutClient({ initialData }: AboutClientProps) {
-  const [formData, setFormData] = useState<AboutData>(initialData);
+  const [formData, setFormData] = useState<AboutData>(() => {
+    // Gabungkan paragraf jika sebelumnya terpisah
+    const bio1 = initialData.bioParagraph1?.trim() || "";
+    const bio2 = initialData.bioParagraph2?.trim() || "";
+    const combinedBio = bio1 && bio2 ? `${bio1}\n\n${bio2}` : bio1 || bio2;
+
+    return {
+      ...initialData,
+      bioParagraph1: combinedBio,
+      bioParagraph2: "",
+    };
+  });
   const [stats, setStats] = useState<StatItem[]>(
     initialData.stats && initialData.stats.length === 3
       ? initialData.stats
@@ -51,6 +67,7 @@ export function AboutClient({ initialData }: AboutClientProps) {
     reduction: number;
   } | null>(null);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [deletedOldPhoto, setDeletedOldPhoto] = useState(false);
   const [showManualUrl, setShowManualUrl] = useState(false);
 
   // Save State
@@ -69,6 +86,9 @@ export function AboutClient({ initialData }: AboutClientProps) {
     // Reset feedback
     setUploadError(null);
     setCompressionResult(null);
+    setDeletedOldPhoto(false);
+
+    const oldPhotoUrl = formData.photoUrl;
 
     // 1. Validation: Max 5MB
     const MAX_FILE_SIZE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -102,59 +122,21 @@ export function AboutClient({ initialData }: AboutClientProps) {
         reductionPercentage,
       } = await convertAndCompressToWebP(file, 1024 * 1024);
 
-      setPhotoProcessStatus("Mengunggah foto ke Supabase Storage...");
-
-      // 4. Upload to Supabase Storage
-      const supabase = createClient();
-      if (!supabase) {
-        throw new Error(
-          "Supabase belum terhubung. Periksa konfigurasi NEXT_PUBLIC_SUPABASE_URL."
-        );
+      // 4. Upload to Supabase Storage via Server Action (Server-side upload & automatic old photo cleanup)
+      setPhotoProcessStatus("Mengunggah foto & menghapus foto lama...");
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", webpFile);
+      if (oldPhotoUrl) {
+        uploadFormData.append("oldPhotoUrl", oldPhotoUrl);
       }
 
-      const timestamp = Date.now();
-      const randomStr = Math.random().toString(36).substring(2, 7);
-      const filePath = `profile/about-photo-${timestamp}-${randomStr}.webp`;
-
-      // Priority bucket: portfolio-assets -> project-images -> files
-      let bucketName = "portfolio-assets";
-      let uploadRes = await supabase.storage
-        .from(bucketName)
-        .upload(filePath, webpFile, {
-          contentType: "image/webp",
-          upsert: true,
-        });
-
-      if (uploadRes.error) {
-        bucketName = "project-images";
-        uploadRes = await supabase.storage
-          .from(bucketName)
-          .upload(filePath, webpFile, {
-            contentType: "image/webp",
-            upsert: true,
-          });
-
-        if (uploadRes.error) {
-          bucketName = "files";
-          uploadRes = await supabase.storage
-            .from(bucketName)
-            .upload(filePath, webpFile, {
-              contentType: "image/webp",
-              upsert: true,
-            });
-
-          if (uploadRes.error) {
-            throw uploadRes.error;
-          }
-        }
+      const uploadResult = await uploadProfilePhotoAction(uploadFormData);
+      if (!uploadResult.success || !uploadResult.publicUrl) {
+        throw new Error(uploadResult.message || "Gagal mengunggah foto ke Supabase Storage.");
       }
 
-      // 5. Get Public URL
-      const {
-        data: { publicUrl },
-      } = supabase.storage.from(bucketName).getPublicUrl(uploadRes.data.path);
-
-      setFormData((prev) => ({ ...prev, photoUrl: publicUrl }));
+      setDeletedOldPhoto(Boolean(oldPhotoUrl && oldPhotoUrl.includes("/storage/v1/object/public/")));
+      setFormData((prev) => ({ ...prev, photoUrl: uploadResult.publicUrl }));
       setCompressionResult({
         original: formatBytes(originalSize),
         compressed: formatBytes(compressedSize),
@@ -178,17 +160,33 @@ export function AboutClient({ initialData }: AboutClientProps) {
 
     const payload: AboutData = {
       ...formData,
+      bioParagraph2: "",
       stats,
     };
 
-    const res = await updateAboutAction(payload);
-    setIsSaving(false);
+    try {
+      const res = await updateAboutAction(payload, initialData.photoUrl);
+      setIsSaving(false);
 
-    if (res.success) {
-      setSuccessMsg("Perubahan bagian About / Bio berhasil disimpan dan langsung tayang!");
-      setTimeout(() => setSuccessMsg(null), 5000);
-    } else {
-      setErrorMsg(res.message || "Gagal menyimpan perubahan. Silakan coba lagi.");
+      if (res.success) {
+        setSuccessMsg("Perubahan bagian About / Bio berhasil disimpan dan langsung tayang!");
+        setTimeout(() => setSuccessMsg(null), 5000);
+      } else {
+        setErrorMsg(res.message || "Gagal menyimpan perubahan. Silakan coba lagi.");
+      }
+    } catch (err: unknown) {
+      setIsSaving(false);
+      const msg = err instanceof Error ? err.message : String(err);
+      if (
+        msg.includes("failed-to-find-server-action") ||
+        msg.includes("was not found on the server")
+      ) {
+        setErrorMsg(
+          "Kode server telah diperbarui saat tab browser ini terbuka. Silakan muat ulang halaman (tekan F5 / Refresh), lalu klik 'Simpan Perubahan' kembali."
+        );
+      } else {
+        setErrorMsg("Gagal menyimpan perubahan. Silakan muat ulang halaman dan coba lagi.");
+      }
     }
   };
 
@@ -403,6 +401,13 @@ export function AboutClient({ initialData }: AboutClientProps) {
                       </span>
                     </div>
                   </div>
+
+                  {deletedOldPhoto && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-emerald-700 dark:text-emerald-300 font-mono pt-1.5 border-t border-emerald-200 dark:border-emerald-900/60">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+                      <span>Foto lama di Supabase Storage otomatis dihapus untuk menghemat ruang.</span>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -526,7 +531,7 @@ export function AboutClient({ initialData }: AboutClientProps) {
             </div>
           </div>
 
-          {/* Panel 3: Bio Paragraphs */}
+          {/* Panel 3: Bio Paragraph (Single Paragraph) */}
           <div className="comic-panel-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 space-y-4">
             <div className="flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800">
               <Bookmark className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
@@ -535,35 +540,28 @@ export function AboutClient({ initialData }: AboutClientProps) {
               </h2>
             </div>
 
-            <div className="space-y-1.5">
-              <label className="block text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                Paragraf 1: Profil Mahasiswa & Fokus Keahlian <span className="text-red-500">*</span>
-              </label>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <label className="block text-xs font-bold text-zinc-800 dark:text-zinc-200">
+                  Narasi Bio & Filosofi Diri <span className="text-red-500">*</span>
+                </label>
+                <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/60 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-800">
+                  {formData.bioParagraph1?.split(/\n+/).filter((p) => p.trim().length > 0).length || 0} Paragraf Terdeteksi
+                </span>
+              </div>
               <textarea
-                rows={4}
+                rows={7}
                 required
                 value={formData.bioParagraph1}
-                onChange={(e) => setFormData({ ...formData, bioParagraph1: e.target.value })}
-                placeholder="Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember..."
+                onChange={(e) =>
+                  setFormData({ ...formData, bioParagraph1: e.target.value, bioParagraph2: "" })
+                }
+                placeholder="Tulis narasi profil & filosofi Anda. Tekan Enter untuk membuat paragraf baru..."
                 className="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-950/60 text-zinc-950 dark:text-white text-xs leading-relaxed focus:border-indigo-600 focus:outline-none"
               />
-              <p className="text-[11px] text-zinc-500">
-                Menjelaskan status mahasiswa Politeknik Negeri Jember dan fokus pada Web Developer & Software Engineer.
+              <p className="text-[11px] text-zinc-500 leading-normal">
+                💡 <strong>Tips Paragraf:</strong> Tekan tombol <strong>Enter</strong> untuk membuat paragraf kedua, ketiga, dst. Di website utama dan di Live Preview sebelah kanan, baris baru otomatis dijadikan paragraf terpisah dengan jarak rapi.
               </p>
-            </div>
-
-            <div className="space-y-1.5 pt-2">
-              <label className="block text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                Paragraf 2: Pendekatan Rekayasa & Standar Kualitas <span className="text-red-500">*</span>
-              </label>
-              <textarea
-                rows={4}
-                required
-                value={formData.bioParagraph2}
-                onChange={(e) => setFormData({ ...formData, bioParagraph2: e.target.value })}
-                placeholder="My approach combines solid software engineering fundamentals with keen attention to user ergonomics..."
-                className="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-950/60 text-zinc-950 dark:text-white text-xs leading-relaxed focus:border-indigo-600 focus:outline-none"
-              />
             </div>
           </div>
 
@@ -757,10 +755,15 @@ export function AboutClient({ initialData }: AboutClientProps) {
                 {formData.title || "Engineering with purpose, precision, and simplicity."}
               </h3>
 
-              {/* Paragraphs */}
-              <div className="space-y-2 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                <p>{formData.bioParagraph1}</p>
-                <p>{formData.bioParagraph2}</p>
+              {/* Paragraph Preview */}
+              <div className="space-y-3 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
+                {(formData.bioParagraph1 || "")
+                  .split(/\n+/)
+                  .map((p) => p.trim())
+                  .filter(Boolean)
+                  .map((paragraph, idx) => (
+                    <p key={idx}>{paragraph}</p>
+                  ))}
               </div>
 
               {/* Academic Box */}

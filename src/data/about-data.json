@@ -1,0 +1,30 @@
+{
+  "chapterLabel": "CHAPTER 01 // ORIGIN & PHILOSOPHY",
+  "title": "Engineering with purpose, precision, and simplicity.",
+  "bioParagraph1": "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.\n\nMy approach combines solid software engineering fundamentals with keen attention to user ergonomics and clean code. Whether architecting database models or fine-tuning micro-interactions, I prioritize code readability, maintainability, and end-user performance.",
+  "bioParagraph2": "",
+  "academicRole": "Academic Affiliation",
+  "academicInstitution": "Informatics Management, Politeknik Negeri Jember",
+  "name": "Dimas Rizqy Ilhami",
+  "badge": "ENGINEER PROFILE",
+  "location": "Jember, Indonesia",
+  "photoUrl": "https://klpuhlocpowbbdhdihjf.supabase.co/storage/v1/object/public/project-images/profile/about-photo-1794921710103-uqsyq.webp",
+  "stickerText": "ORIGIN FILE",
+  "stats": [
+    {
+      "value": "3+",
+      "label": "Years Coding",
+      "description": "Dedicated to modern software engineering"
+    },
+    {
+      "value": "15+",
+      "label": "Projects Completed",
+      "description": "Web apps, APIs, and client platforms"
+    },
+    {
+      "value": "100%",
+      "label": "Clean Code Focus",
+      "description": "Accessibility, performance, and best practices"
+    }
+  ]
+}

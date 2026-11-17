@@ -108,6 +108,13 @@ export async function updateProjectAction(
     };
   }
 
+  // Ambil data gambar lama jika diganti untuk menghemat storage
+  const { data: existingProject } = await supabase
+    .from("projects")
+    .select("image_url")
+    .eq("id", id)
+    .single();
+
   const { error } = await supabase
     .from("projects")
     .update(validation.data)
@@ -118,6 +125,27 @@ export async function updateProjectAction(
       success: false,
       message: `Gagal memperbarui project: ${error.message}`,
     };
+  }
+
+  // Jika foto diganti dan foto lama tersimpan di Supabase Storage, hapus foto lama
+  if (
+    existingProject?.image_url &&
+    existingProject.image_url !== validation.data.image_url &&
+    existingProject.image_url.includes("/storage/v1/object/public/")
+  ) {
+    try {
+      const parts = existingProject.image_url.split("/storage/v1/object/public/")[1];
+      if (parts) {
+        const slashIdx = parts.indexOf("/");
+        const bucket = parts.substring(0, slashIdx);
+        const filePath = parts.substring(slashIdx + 1).split("?")[0];
+        if (bucket && filePath) {
+          await supabase.storage.from(bucket).remove([filePath]);
+        }
+      }
+    } catch {
+      // Abaikan error cleanup agar update project tetap sukses
+    }
   }
 
   revalidatePath("/");

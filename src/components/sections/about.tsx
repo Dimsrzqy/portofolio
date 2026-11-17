@@ -42,15 +42,18 @@ export function About({ data }: AboutProps) {
       ? t.about.title
       : data?.title || t.about.title;
 
-  const bioParagraph1 =
-    isId && (!data || data.bioParagraph1.includes("Passionate Web Developer"))
+  const rawBioText =
+    data?.bioParagraph1 && data.bioParagraph1.trim() !== ""
+      ? data.bioParagraph1
+      : isId
       ? t.about.bio1
-      : data?.bioParagraph1 || t.about.bio1;
+      : "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.";
 
-  const bioParagraph2 =
-    isId && (!data || data.bioParagraph2.includes("My approach combines"))
-      ? t.about.bio2
-      : data?.bioParagraph2 || t.about.bio2;
+  // Otomatis pecah setiap baris baru (Enter) menjadi paragraf terpisah
+  const bioParagraphs = rawBioText
+    .split(/\n+/)
+    .map((p) => p.trim())
+    .filter(Boolean);
 
   const academicRole =
     isId && (!data || data.academicRole === "Academic Affiliation")
@@ -79,8 +82,8 @@ export function About({ data }: AboutProps) {
           <motion.div
             initial={{ opacity: 0, x: -16 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="lg:col-span-5"
           >
             <div className="relative max-w-sm mx-auto lg:max-w-none">
@@ -117,8 +120,8 @@ export function About({ data }: AboutProps) {
           <motion.div
             initial={{ opacity: 0, x: 16 }}
             whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.5 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.5, ease: "easeOut" }}
             className="lg:col-span-7 flex flex-col justify-center"
           >
             {/* Comic Chapter Header */}
@@ -132,8 +135,9 @@ export function About({ data }: AboutProps) {
             </h2>
 
             <div className="space-y-4 text-zinc-700 dark:text-zinc-300 text-base leading-relaxed mb-8">
-              <p>{bioParagraph1}</p>
-              <p>{bioParagraph2}</p>
+              {bioParagraphs.map((paragraph, index) => (
+                <p key={index}>{paragraph}</p>
+              ))}
             </div>
 
             {/* Comic Narrator Box for Academic Base */}
@@ -150,8 +154,12 @@ export function About({ data }: AboutProps) {
             {/* 3 Comic Quick Stats */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               {stats.map((stat, i) => (
-                <div
+                <motion.div
                   key={stat.label}
+                  initial={{ opacity: 0, y: 16, scale: 0.95 }}
+                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.4, delay: 0.15 + i * 0.1, ease: "easeOut" }}
                   className={`comic-panel-sm p-4 rounded-xl bg-white dark:bg-zinc-900 ${
                     i === 0 ? "hover:rotate-1" : i === 1 ? "hover:-rotate-1" : "hover:rotate-1"
                   } transition-transform`}
@@ -165,7 +173,7 @@ export function About({ data }: AboutProps) {
                   <p className="text-xs text-zinc-500 dark:text-zinc-400">
                     {stat.description}
                   </p>
-                </div>
+                </motion.div>
               ))}
             </div>
           </motion.div>

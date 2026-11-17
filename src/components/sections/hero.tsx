@@ -10,7 +10,8 @@ import { GithubIcon, LinkedinIcon, TwitterIcon, InstagramIcon } from "@/componen
 import { motion } from "framer-motion";
 
 export function Hero() {
-  const { t } = useLanguage();
+  const { language, t } = useLanguage();
+  const isId = language === "id";
   return (
     <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden comic-halftone">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -142,6 +143,22 @@ export function Hero() {
             </div>
           </motion.div>
         </div>
+
+        {/* Scroll Indicator Cue */}
+        <motion.div
+          initial={{ opacity: 0, y: -6 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.8 }}
+          className="mt-14 sm:mt-16 flex items-center justify-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-zinc-500 dark:text-zinc-400"
+        >
+          <span>{isId ? "GULIR KE BAWAH // EKSPLORASI" : "SCROLL TO EXPLORE // DISCOVER"}</span>
+          <motion.div
+            animate={{ y: [0, 5, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+          >
+            <ArrowDown className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
+          </motion.div>
+        </motion.div>
       </div>
     </section>
   );

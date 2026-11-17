@@ -22,7 +22,13 @@ export function EducationExperience({
     <section id="experience" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800 bg-zinc-50/70 dark:bg-zinc-950/70 comic-halftone">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         {/* Section Header */}
-        <div className="max-w-2xl mb-12 sm:mb-16">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 0.5, ease: "easeOut" }}
+          className="max-w-2xl mb-12 sm:mb-16"
+        >
           <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-850 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4">
             <Compass className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>{t.experience.chapter}</span>
@@ -33,28 +39,40 @@ export function EducationExperience({
           <p className="text-base text-zinc-600 dark:text-zinc-400 font-medium">
             {t.experience.description}
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Education Column */}
           <div>
-            <div className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.4 }}
+              className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700"
+            >
               <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <span>{t.experience.academyTrack}</span>
-            </div>
+            </motion.div>
 
             <div className="relative pl-7 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[3px] before:bg-zinc-950 dark:before:bg-zinc-700">
               {education.map((item, index) => (
                 <motion.div
                   key={item.institution}
-                  initial={{ opacity: 0, x: -12 }}
+                  initial={{ opacity: 0, x: -16 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.45, delay: index * 0.1, ease: "easeOut" }}
                   className="relative group"
                 >
                   {/* Comic Node */}
-                  <span className="absolute -left-[30px] top-2 w-4 h-4 rounded-full bg-indigo-600 border-2 border-zinc-950 dark:border-white shadow-[1.5px_1.5px_0px_0px_#09090b]" />
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true, margin: "-30px" }}
+                    transition={{ duration: 0.3, delay: index * 0.1 + 0.15, type: "spring", stiffness: 350, damping: 20 }}
+                    className="absolute -left-[30px] top-2 w-4 h-4 rounded-full bg-indigo-600 border-2 border-zinc-950 dark:border-white shadow-[1.5px_1.5px_0px_0px_#09090b]"
+                  />
 
                   <div className="comic-panel-sm p-6 rounded-2xl bg-white dark:bg-zinc-900">
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-2">
@@ -101,23 +119,35 @@ export function EducationExperience({
 
           {/* Experience Column */}
           <div>
-            <div className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, margin: "-40px" }}
+              transition={{ duration: 0.4 }}
+              className="flex items-center gap-2.5 text-base font-black uppercase font-mono tracking-tight text-zinc-950 dark:text-white mb-8 pb-3 border-b-2 border-zinc-950 dark:border-zinc-700"
+            >
               <Briefcase className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
               <span>{t.experience.operationsTrack}</span>
-            </div>
+            </motion.div>
 
             <div className="relative pl-7 space-y-8 before:absolute before:left-2.5 before:top-3 before:bottom-3 before:w-[3px] before:bg-zinc-950 dark:before:bg-zinc-700">
               {experience.map((item, index) => (
                 <motion.div
                   key={item.role + item.company}
-                  initial={{ opacity: 0, x: -12 }}
+                  initial={{ opacity: 0, x: -16 }}
                   whileInView={{ opacity: 1, x: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.4, delay: index * 0.1 }}
+                  viewport={{ once: true, margin: "-30px" }}
+                  transition={{ duration: 0.45, delay: index * 0.1, ease: "easeOut" }}
                   className="relative group"
                 >
                   {/* Comic Node */}
-                  <span className="absolute -left-[30px] top-2 w-4 h-4 rounded-full bg-indigo-600 border-2 border-zinc-950 dark:border-white shadow-[1.5px_1.5px_0px_0px_#09090b]" />
+                  <motion.span
+                    initial={{ scale: 0 }}
+                    whileInView={{ scale: 1 }}
+                    viewport={{ once: true, margin: "-30px" }}
+                    transition={{ duration: 0.3, delay: index * 0.1 + 0.15, type: "spring", stiffness: 350, damping: 20 }}
+                    className="absolute -left-[30px] top-2 w-4 h-4 rounded-full bg-indigo-600 border-2 border-zinc-950 dark:border-white shadow-[1.5px_1.5px_0px_0px_#09090b]"
+                  />
 
                   <div className="comic-panel-sm p-6 rounded-2xl bg-white dark:bg-zinc-900">
                     <div className="flex flex-wrap items-center justify-between gap-2 mb-1.5">

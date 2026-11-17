@@ -4,11 +4,18 @@ import React from "react";
 import { profileData } from "@/data/profile";
 import { useLanguage } from "@/context/language-context";
 import { Zap } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function Footer() {
   const { t } = useLanguage();
   return (
-    <footer className="border-t-2 border-zinc-950 dark:border-zinc-800 py-10 bg-white dark:bg-zinc-950">
+    <motion.footer
+      initial={{ opacity: 0, y: 16 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="border-t-2 border-zinc-950 dark:border-zinc-800 py-10 bg-white dark:bg-zinc-950"
+    >
       <div className="max-w-6xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <div className="comic-panel-sm w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center font-black text-xs">
@@ -29,6 +36,6 @@ export function Footer() {
           {t.footer.tagline}
         </p>
       </div>
-    </footer>
+    </motion.footer>
   );
 }

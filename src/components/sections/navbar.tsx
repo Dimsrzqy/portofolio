@@ -7,11 +7,19 @@ import { ThemeToggle } from "@/components/ui/theme-toggle";
 import { LanguageToggle } from "@/components/ui/language-toggle";
 import { useLanguage } from "@/context/language-context";
 import { Menu, X } from "lucide-react";
+import { motion, useScroll, useSpring } from "framer-motion";
 
 export function Navbar() {
   const { t } = useLanguage();
   const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
+
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, {
+    stiffness: 100,
+    damping: 30,
+    restDelta: 0.001,
+  });
 
   const navLinks = [
     { href: "#about", label: t.nav.origin },
@@ -116,6 +124,12 @@ export function Navbar() {
           </div>
         </div>
       )}
+
+      {/* Comic Reading Scroll Progress Indicator */}
+      <motion.div
+        className="absolute bottom-0 left-0 right-0 h-[2.5px] bg-indigo-600 dark:bg-indigo-400 origin-left pointer-events-none z-10"
+        style={{ scaleX }}
+      />
     </header>
   );
 }

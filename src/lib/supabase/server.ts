@@ -3,9 +3,11 @@ import { cookies } from "next/headers";
 
 export async function createServerSupabaseClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+  const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  const keyToUse = serviceRoleKey || supabaseAnonKey;
 
-  if (!supabaseUrl || !supabaseAnonKey) {
+  if (!supabaseUrl || !keyToUse) {
     return null;
   }
 
@@ -16,7 +18,7 @@ export async function createServerSupabaseClient() {
     cookieStore = null;
   }
 
-  return createServerClient(supabaseUrl, supabaseAnonKey, {
+  return createServerClient(supabaseUrl, keyToUse, {
     cookies: {
       getAll() {
         return cookieStore ? cookieStore.getAll() : [];

@@ -1,3 +1,5 @@
+import fs from "fs/promises";
+import path from "path";
 import { createServerSupabaseClient } from "./server";
 import { profileData } from "@/data/profile";
 import { AboutData } from "@/types";
@@ -6,9 +8,8 @@ export const defaultAboutData: AboutData = {
   chapterLabel: "CHAPTER 01 // ORIGIN & PHILOSOPHY",
   title: "Engineering with purpose, precision, and simplicity.",
   bioParagraph1:
-    "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.",
-  bioParagraph2:
-    "My approach combines solid software engineering fundamentals with keen attention to user ergonomics and clean code. Whether architecting database models or fine-tuning micro-interactions, I prioritize code readability, maintainability, and end-user performance.",
+    "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures and user ergonomics.",
+  bioParagraph2: "",
   academicRole: "Academic Affiliation",
   academicInstitution: "Informatics Management, Politeknik Negeri Jember",
   name: "Dimas Rizqy Ilhami",
@@ -21,55 +22,99 @@ export const defaultAboutData: AboutData = {
 
 const FILE_PATH = "about.json";
 const BUCKET = "files";
+const LOCAL_DATA_PATH = path.join(process.cwd(), "src", "data", "about-data.json");
+
+// Helper to read local JSON file
+async function getLocalAboutData(): Promise<AboutData | null> {
+  try {
+    const raw = await fs.readFile(LOCAL_DATA_PATH, "utf-8");
+    return JSON.parse(raw) as AboutData;
+  } catch {
+    return null;
+  }
+}
+
+// Helper to save local JSON file
+async function saveLocalAboutData(data: AboutData): Promise<void> {
+  try {
+    await fs.writeFile(LOCAL_DATA_PATH, JSON.stringify(data, null, 2), "utf-8");
+  } catch (err) {
+    console.warn("Failed to write local about backup:", err);
+  }
+}
 
 export async function getAboutData(): Promise<AboutData> {
+  // 1. Coba ambil dari Supabase Storage
   try {
     const supabase = await createServerSupabaseClient();
-    if (!supabase) return defaultAboutData;
+    if (supabase) {
+      const { data, error } = await supabase.storage
+        .from(BUCKET)
+        .download(FILE_PATH);
 
-    const { data, error } = await supabase.storage
-      .from(BUCKET)
-      .download(FILE_PATH);
+      if (!error && data) {
+        const text = await data.text();
+        const parsed = JSON.parse(text) as Partial<AboutData>;
 
-    if (error || !data) return defaultAboutData;
+        const resolved: AboutData = {
+          chapterLabel: parsed.chapterLabel || defaultAboutData.chapterLabel,
+          title: parsed.title || defaultAboutData.title,
+          bioParagraph1: parsed.bioParagraph1 !== undefined ? parsed.bioParagraph1 : defaultAboutData.bioParagraph1,
+          bioParagraph2: parsed.bioParagraph2 || "",
+          academicRole: parsed.academicRole || defaultAboutData.academicRole,
+          academicInstitution: parsed.academicInstitution || defaultAboutData.academicInstitution,
+          name: parsed.name || defaultAboutData.name,
+          badge: parsed.badge || defaultAboutData.badge,
+          location: parsed.location || defaultAboutData.location,
+          photoUrl: parsed.photoUrl || defaultAboutData.photoUrl,
+          stickerText: parsed.stickerText || defaultAboutData.stickerText,
+          stats:
+            Array.isArray(parsed.stats) && parsed.stats.length > 0
+              ? parsed.stats
+              : defaultAboutData.stats,
+        };
 
-    const text = await data.text();
-    const parsed = JSON.parse(text) as Partial<AboutData>;
-
-    return {
-      chapterLabel: parsed.chapterLabel || defaultAboutData.chapterLabel,
-      title: parsed.title || defaultAboutData.title,
-      bioParagraph1: parsed.bioParagraph1 || defaultAboutData.bioParagraph1,
-      bioParagraph2: parsed.bioParagraph2 || defaultAboutData.bioParagraph2,
-      academicRole: parsed.academicRole || defaultAboutData.academicRole,
-      academicInstitution: parsed.academicInstitution || defaultAboutData.academicInstitution,
-      name: parsed.name || defaultAboutData.name,
-      badge: parsed.badge || defaultAboutData.badge,
-      location: parsed.location || defaultAboutData.location,
-      photoUrl: parsed.photoUrl || defaultAboutData.photoUrl,
-      stickerText: parsed.stickerText || defaultAboutData.stickerText,
-      stats:
-        Array.isArray(parsed.stats) && parsed.stats.length > 0
-          ? parsed.stats
-          : defaultAboutData.stats,
-    };
+        // Sinkronkan ke lokal agar selalu up to date
+        saveLocalAboutData(resolved).catch(() => {});
+        return resolved;
+      }
+    }
   } catch {
-    return defaultAboutData;
+    // Lanjut ke fallback lokal
   }
+
+  // 2. Fallback: Ambil dari file lokal
+  const local = await getLocalAboutData();
+  if (local) {
+    return {
+      ...defaultAboutData,
+      ...local,
+      bioParagraph1: local.bioParagraph1 !== undefined ? local.bioParagraph1 : defaultAboutData.bioParagraph1,
+      bioParagraph2: local.bioParagraph2 || "",
+    };
+  }
+
+  // 3. Fallback default
+  return defaultAboutData;
 }
 
 export async function saveAboutData(
   newData: AboutData
 ): Promise<{ success: boolean; message?: string }> {
+  // 1. Simpan selalu ke file lokal terlebih dahulu agar data tidak pernah hilang
+  await saveLocalAboutData(newData);
+
+  // 2. Simpan ke Supabase Storage jika terhubung
   try {
     const supabase = await createServerSupabaseClient();
     if (!supabase) {
-      return { success: false, message: "Supabase client belum terkonfigurasi." };
+      return { success: true };
     }
 
     const jsonString = JSON.stringify(newData, null, 2);
     const blob = new Blob([jsonString], { type: "application/json" });
 
+    // Coba upload ke bucket 'files' atau fallback ke 'portfolio-assets'
     const { error } = await supabase.storage
       .from(BUCKET)
       .upload(FILE_PATH, blob, {
@@ -78,12 +123,12 @@ export async function saveAboutData(
       });
 
     if (error) {
-      return { success: false, message: error.message };
+      console.warn("Supabase storage upload warning (saved locally):", error.message);
     }
 
     return { success: true };
   } catch (err: unknown) {
-    const msg = err instanceof Error ? err.message : "Gagal menyimpan data ke Supabase";
-    return { success: false, message: msg };
+    console.warn("Supabase save error (saved locally):", err);
+    return { success: true };
   }
 }

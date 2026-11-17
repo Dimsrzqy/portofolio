@@ -3,7 +3,7 @@
 import React, { useActionState, useRef, useEffect } from "react";
 import { submitContactMessage, type ContactActionResult } from "@/app/actions/contact";
 import { profileData } from "@/data/profile";
-import { Mail, Send, CheckCircle2, AlertCircle, Radio } from "lucide-react";
+import { Mail, Send, CheckCircle2, AlertCircle, Radio, ExternalLink, MessageSquare } from "lucide-react";
 import { GithubIcon, LinkedinIcon, TwitterIcon, InstagramIcon } from "@/components/ui/icons";
 import { motion } from "framer-motion";
 
@@ -16,10 +16,18 @@ export function Contact() {
   const formRef = useRef<HTMLFormElement>(null);
 
   useEffect(() => {
-    if (state?.success && formRef.current) {
-      formRef.current.reset();
+    if (state?.success) {
+      if (formRef.current) {
+        formRef.current.reset();
+      }
+      if (state.whatsappUrl) {
+        const timer = setTimeout(() => {
+          window.open(state.whatsappUrl, "_blank", "noopener,noreferrer");
+        }, 200);
+        return () => clearTimeout(timer);
+      }
     }
-  }, [state?.success]);
+  }, [state]);
 
   return (
     <section id="contact" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800">
@@ -50,13 +58,34 @@ export function Contact() {
                 </div>
                 <div>
                   <p className="text-[11px] font-mono uppercase font-bold text-indigo-600 dark:text-indigo-400">
-                    Direct Dispatch
+                    Direct Email Dispatch
                   </p>
                   <p className="text-sm font-black text-zinc-950 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
                     {profileData.email}
                   </p>
                 </div>
               </a>
+
+              {profileData.whatsapp && (
+                <a
+                  href={`https://wa.me/${profileData.whatsapp}`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="comic-panel-sm flex items-center gap-3.5 p-4 rounded-xl bg-white dark:bg-zinc-900 hover:border-emerald-600 dark:hover:border-emerald-400 transition-colors group"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-600 dark:text-emerald-400 border-2 border-zinc-950 dark:border-zinc-700 flex items-center justify-center shrink-0 shadow-[1.5px_1.5px_0px_0px_#09090b]">
+                    <MessageSquare className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <p className="text-[11px] font-mono uppercase font-bold text-emerald-600 dark:text-emerald-400">
+                      WhatsApp Instant Chat
+                    </p>
+                    <p className="text-sm font-black text-zinc-950 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+                      +62 856-4581-9510
+                    </p>
+                  </div>
+                </a>
+              )}
             </div>
 
             <div>
@@ -64,42 +93,50 @@ export function Contact() {
                 Signal Coordinates
               </p>
               <div className="flex items-center gap-3">
-                <a
-                  href={profileData.socials.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                  aria-label="GitHub"
-                >
-                  <GithubIcon className="w-4 h-4" />
-                </a>
-                <a
-                  href={profileData.socials.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                  aria-label="LinkedIn"
-                >
-                  <LinkedinIcon className="w-4 h-4" />
-                </a>
-                <a
-                  href={profileData.socials.twitter}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                  aria-label="Twitter"
-                >
-                  <TwitterIcon className="w-4 h-4" />
-                </a>
-                <a
-                  href={profileData.socials.instagram}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
-                  aria-label="Instagram"
-                >
-                  <InstagramIcon className="w-4 h-4" />
-                </a>
+                {profileData.socials.github && (
+                  <a
+                    href={profileData.socials.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                    aria-label="GitHub"
+                  >
+                    <GithubIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profileData.socials.linkedin && (
+                  <a
+                    href={profileData.socials.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                    aria-label="LinkedIn"
+                  >
+                    <LinkedinIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profileData.socials.instagram && (
+                  <a
+                    href={profileData.socials.instagram}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                    aria-label="Instagram"
+                  >
+                    <InstagramIcon className="w-4 h-4" />
+                  </a>
+                )}
+                {profileData.socials.twitter && (
+                  <a
+                    href={profileData.socials.twitter}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="comic-panel-sm w-10 h-10 rounded-lg bg-white dark:bg-zinc-900 flex items-center justify-center text-zinc-900 dark:text-zinc-100 hover:text-indigo-600 dark:hover:text-indigo-400 transition-transform hover:-translate-y-0.5 min-h-[44px] min-w-[44px]"
+                    aria-label="Twitter"
+                  >
+                    <TwitterIcon className="w-4 h-4" />
+                  </a>
+                )}
               </div>
             </div>
           </div>
@@ -114,9 +151,29 @@ export function Contact() {
           >
             <div className="comic-panel rounded-2xl bg-white dark:bg-zinc-900 p-6 sm:p-8">
               {state?.success && (
-                <div className="mb-6 p-4 rounded-xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 text-sm flex items-start gap-3 shadow-[2px_2px_0px_0px_#059669]">
-                  <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
-                  <p className="font-bold">{state.message}</p>
+                <div className="mb-6 p-4 rounded-xl border-2 border-emerald-600 bg-emerald-50 dark:bg-emerald-950/50 text-emerald-900 dark:text-emerald-200 text-sm space-y-2.5 shadow-[2px_2px_0px_0px_#059669]">
+                  <div className="flex items-start gap-3">
+                    <CheckCircle2 className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" />
+                    <div>
+                      <p className="font-bold">{state.message}</p>
+                      <p className="text-xs text-emerald-700 dark:text-emerald-300 mt-0.5">
+                        Pesan Anda juga otomatis tersimpan. Jika WhatsApp tidak terbuka secara otomatis, klik tombol di bawah:
+                      </p>
+                    </div>
+                  </div>
+                  {state.whatsappUrl && (
+                    <div className="pt-1">
+                      <a
+                        href={state.whatsappUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="comic-btn inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-emerald-600 text-white font-bold text-xs hover:bg-emerald-700 transition-all min-h-[40px]"
+                      >
+                        <span>Kirim via WhatsApp Sekarang</span>
+                        <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    </div>
+                  )}
                 </div>
               )}
 

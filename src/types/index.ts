@@ -54,3 +54,18 @@ export interface StatItem {
   value: string;
   description: string;
 }
+
+export interface AboutData {
+  chapterLabel: string;
+  title: string;
+  bioParagraph1: string;
+  bioParagraph2: string;
+  academicRole: string;
+  academicInstitution: string;
+  name: string;
+  badge: string;
+  location: string;
+  photoUrl: string;
+  stickerText: string;
+  stats: StatItem[];
+}

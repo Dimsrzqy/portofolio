@@ -12,6 +12,8 @@ import { getChronicleData } from "@/lib/supabase/chronicle";
 import { getAboutData } from "@/lib/supabase/about";
 import { getSkillsData } from "@/lib/supabase/skills";
 
+export const dynamic = "force-dynamic";
+
 export default async function HomePage() {
   const projects = await getPublishedProjects();
   const chronicle = await getChronicleData();

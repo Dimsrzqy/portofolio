@@ -1,4 +1,4 @@
-import { EducationItem, ExperienceItem, SkillCategory, StatItem, SkillsData } from "@/types";
+import { EducationItem, ExperienceItem, SkillCategory, SkillsData } from "@/types";
 
 export const profileData = {
   name: "Dimas Rizqy Ilhami",
@@ -19,23 +19,6 @@ export const profileData = {
     twitter: "",
     instagram: "https://www.instagram.com/dimsrzqy_/",
   },
-  stats: [
-    {
-      value: "3+",
-      label: "Years Coding",
-      description: "Dedicated to modern software engineering",
-    },
-    {
-      value: "15+",
-      label: "Projects Completed",
-      description: "Web apps, APIs, and client platforms",
-    },
-    {
-      value: "100%",
-      label: "Clean Code Focus",
-      description: "Accessibility, performance, and best practices",
-    },
-  ] as StatItem[],
   education: [
     {
       institution: "Politeknik Negeri Jember",

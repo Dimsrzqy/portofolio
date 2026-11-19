@@ -30,16 +30,6 @@ export const translations = {
       title: "Engineering with purpose, precision, and simplicity.",
       bio1: "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.",
       bio2: "My approach combines solid software engineering fundamentals with keen attention to user ergonomics and clean code. Whether architecting database models or fine-tuning micro-interactions, I prioritize code readability, maintainability, and end-user performance.",
-      academicRole: "Academic Affiliation",
-      academicInstitution: "Informatics Management, Politeknik Negeri Jember",
-      stats: {
-        yearsCoding: "Years Coding",
-        yearsDesc: "Dedicated to modern software engineering",
-        projectsCompleted: "Projects Completed",
-        projectsDesc: "Web apps, APIs, and client platforms",
-        cleanCodeFocus: "Clean Code Focus",
-        cleanCodeDesc: "Accessibility, performance, and best practices",
-      },
     },
     // Skills
     skills: {
@@ -122,16 +112,6 @@ export const translations = {
       title: "Membangun dengan tujuan, presisi, dan kesederhanaan.",
       bio1: "Web Developer dan Software Engineer yang berdedikasi, saat ini menempuh studi Manajemen Informatika di Politeknik Negeri Jember. Berfokus merancang produk digital yang bersih, aksesibel, dan berkinerja tinggi dengan arsitektur modern.",
       bio2: "Pendekatan saya menggabungkan fundamental software engineering yang kuat dengan perhatian mendalam pada kenyamanan pengguna dan kode bersih. Mulai dari arsitektur model database hingga penyempurnaan mikro-interaksi, saya memprioritaskan keterbacaan kode, kemudahan pemeliharaan, serta performa maksimal.",
-      academicRole: "Afiliasi Akademik",
-      academicInstitution: "Manajemen Informatika, Politeknik Negeri Jember",
-      stats: {
-        yearsCoding: "Tahun Coding",
-        yearsDesc: "Dedikasi pada rekayasa perangkat lunak modern",
-        projectsCompleted: "Proyek Selesai",
-        projectsDesc: "Aplikasi web, API, dan platform klien",
-        cleanCodeFocus: "Fokus Kode Bersih",
-        cleanCodeDesc: "Aksesibilitas, performa, dan praktik terbaik",
-      },
     },
     // Skills
     skills: {

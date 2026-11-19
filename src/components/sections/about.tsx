@@ -3,23 +3,31 @@
 import React from "react";
 import Image from "next/image";
 import { profileData } from "@/data/profile";
+import { translations } from "@/data/translations";
 import { useLanguage } from "@/context/language-context";
-import { MapPin, GraduationCap, Bookmark } from "lucide-react";
-import { motion } from "framer-motion";
+import { MapPin, Bookmark } from "lucide-react";
 import { AboutData } from "@/types";
 
 interface AboutProps {
   data?: AboutData;
 }
 
-export function About({ data }: AboutProps) {
+interface AboutPanelsProps extends AboutProps {
+  headingId?: string;
+  preview?: boolean;
+}
+
+export function AboutPanels({ data, headingId, preview = false }: AboutPanelsProps) {
   const { language, t } = useLanguage();
   const isId = language === "id";
 
   const name = data?.name || profileData.name;
   const location = data?.location || profileData.location;
-  const photoUrl =
-    data?.photoUrl ||
+  const enteredPhotoUrl = data?.photoUrl?.trim() || "";
+  const isPreviewPhotoUrl =
+    (enteredPhotoUrl.startsWith("/") && !enteredPhotoUrl.startsWith("//")) ||
+    (/^https?:\/\//i.test(enteredPhotoUrl) && URL.canParse(enteredPhotoUrl));
+  const photoUrl = (preview && !isPreviewPhotoUrl ? "" : enteredPhotoUrl) ||
     "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80";
 
   const stickerText =
@@ -38,146 +46,91 @@ export function About({ data }: AboutProps) {
       : data?.chapterLabel || t.about.chapter;
 
   const title =
-    isId && (!data || data.title.includes("Engineering with purpose"))
+    isId && (!data || data.title === translations.en.about.title)
       ? t.about.title
       : data?.title || t.about.title;
 
-  const rawBioText =
-    data?.bioParagraph1 && data.bioParagraph1.trim() !== ""
-      ? data.bioParagraph1
-      : isId
-      ? t.about.bio1
-      : "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures.";
+  const rawBioText = [data?.bioParagraph1?.trim(), data?.bioParagraph2?.trim()]
+    .filter(Boolean)
+    .join("\n\n") || t.about.bio1;
 
-  // Otomatis pecah setiap baris baru (Enter) menjadi paragraf terpisah
-  const bioParagraphs = rawBioText
-    .split(/\n+/)
-    .map((p) => p.trim())
-    .filter(Boolean);
-
-  const academicRole =
-    isId && (!data || data.academicRole === "Academic Affiliation")
-      ? t.about.academicRole
-      : data?.academicRole || t.about.academicRole;
-
-  const academicInstitution =
-    isId && (!data || data.academicInstitution.includes("Informatics Management"))
-      ? t.about.academicInstitution
-      : data?.academicInstitution || t.about.academicInstitution;
-
-  const rawStats = data?.stats && data.stats.length > 0 ? data.stats : profileData.stats;
-  const stats = rawStats.map((st, i) => {
-    if (!isId) return st;
-    if (i === 0) return { ...st, label: t.about.stats.yearsCoding, description: t.about.stats.yearsDesc };
-    if (i === 1) return { ...st, label: t.about.stats.projectsCompleted, description: t.about.stats.projectsDesc };
-    if (i === 2) return { ...st, label: t.about.stats.cleanCodeFocus, description: t.about.stats.cleanCodeDesc };
-    return st;
-  });
+  const { bio1, bio2 } = translations.en.about;
+  const bioParagraphs =
+    rawBioText.trim() === `${bio1} ${bio2}\n\ncontoh`
+      ? [bio1, bio2]
+      : rawBioText.split(/\r?\n/).map((paragraph) => paragraph.trim()).filter(Boolean);
 
   return (
-    <section id="about" className="py-20 sm:py-28 border-t-2 border-zinc-950 dark:border-zinc-800">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-16 items-center">
-          {/* Left: Stylized photo card with comic panel treatment */}
-          <motion.div
-            initial={{ opacity: 0, x: -16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="lg:col-span-5"
-          >
-            <div className="relative max-w-sm mx-auto lg:max-w-none">
-              {/* Comic sticker pin */}
-              <div className="absolute -top-3.5 -right-2 bg-indigo-600 text-white font-mono text-[11px] font-black uppercase tracking-wider px-3 py-1 rounded-md border-2 border-zinc-950 dark:border-white shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_#ffffff] z-20 rotate-3">
-                {stickerText}
-              </div>
-
-              <div className="comic-panel relative rounded-2xl overflow-hidden bg-white dark:bg-zinc-900 aspect-4/5">
-                <Image
-                  src={photoUrl}
-                  alt={`Portrait of ${name}`}
-                  fill
-                  className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                  sizes="(max-width: 768px) 100vw, 400px"
-                  priority={false}
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-transparent" />
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <div className="inline-block px-2 py-0.5 bg-indigo-600 text-[10px] font-bold uppercase rounded-sm mb-1">
-                    {badge}
-                  </div>
-                  <p className="font-black text-base tracking-tight">{name}</p>
-                  <p className="text-xs text-zinc-300 flex items-center gap-1.5 mt-0.5 font-medium">
-                    <MapPin className="w-3.5 h-3.5 text-indigo-400" />
-                    <span>{location}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Right: Bio and 3 Stats */}
-          <motion.div
-            initial={{ opacity: 0, x: 16 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-60px" }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="lg:col-span-7 flex flex-col justify-center"
-          >
-            {/* Comic Chapter Header */}
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4 self-start">
-              <Bookmark className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span>{chapterLabel}</span>
-            </div>
-
-            <h2 className="text-3xl sm:text-4xl font-black tracking-tight text-zinc-950 dark:text-white mb-6 leading-tight">
+    <div className="@container">
+      <div className="mx-auto grid max-w-2xl gap-4 @min-[44rem]:grid-cols-[minmax(0,2fr)_minmax(0,3fr)] @min-[60rem]:max-w-none @min-[60rem]:grid-cols-[minmax(0,4fr)_minmax(0,7fr)] @min-[60rem]:grid-rows-[auto_1fr] @min-[60rem]:gap-5">
+        <header className="comic-panel min-w-0 overflow-hidden rounded-2xl bg-white wrap-anywhere dark:bg-zinc-900 @min-[44rem]:col-span-2 @min-[60rem]:col-span-1 @min-[60rem]:col-start-2 @min-[60rem]:row-start-1">
+          <div className="flex items-start gap-2 border-b-2 border-zinc-950 bg-indigo-700 px-4 py-2.5 font-mono text-xs font-bold tracking-wide text-white uppercase dark:border-zinc-700 @min-[36rem]:px-6">
+            <Bookmark aria-hidden="true" className="mt-px size-3.5 shrink-0" />
+            <span>{chapterLabel}</span>
+          </div>
+          <div className="relative px-4 py-6 @min-[36rem]:px-6 @min-[36rem]:py-7 @min-[60rem]:px-8">
+            <div aria-hidden="true" className="comic-halftone pointer-events-none absolute inset-y-0 right-0 w-1/3" />
+            <h2
+              id={headingId}
+              className="relative max-w-[23ch] text-3xl leading-[1.1] font-black tracking-tight text-balance text-zinc-950 dark:text-white @min-[36rem]:text-4xl xl:@min-[68rem]:text-5xl"
+            >
               {title}
             </h2>
+          </div>
+        </header>
 
-            <div className="space-y-4 text-zinc-700 dark:text-zinc-300 text-base leading-relaxed mb-8">
-              {bioParagraphs.map((paragraph, index) => (
-                <p key={index}>{paragraph}</p>
-              ))}
-            </div>
+        <figure className="comic-panel flex min-w-0 flex-col overflow-hidden rounded-2xl bg-white dark:bg-zinc-900 @min-[44rem]:col-start-1 @min-[44rem]:row-start-2 @min-[60rem]:row-span-2 @min-[60rem]:row-start-1">
+          <div className="relative aspect-[6/5] min-h-56 flex-1 bg-zinc-200 dark:bg-zinc-800 @min-[44rem]:aspect-auto @min-[60rem]:min-h-80">
+            <Image
+              src={photoUrl}
+              alt={isId ? `Potret ${name}` : `Portrait of ${name}`}
+              fill
+              unoptimized={preview}
+              className="object-cover grayscale"
+              sizes="(min-width: 1152px) 394px, (min-width: 1024px) 35vw, (min-width: 768px) 263px, (min-width: 720px) 672px, (min-width: 640px) calc(100vw - 48px), calc(100vw - 32px)"
+            />
+            <span className="absolute top-3 right-3 max-w-[calc(100%-1.5rem)] rotate-2 rounded-md border-2 border-zinc-950 bg-indigo-600 px-2.5 py-1 text-[11px] font-bold font-mono uppercase wrap-anywhere text-white shadow-[2px_2px_0px_0px_#09090b] dark:border-zinc-200">
+              {stickerText}
+            </span>
+          </div>
+          <figcaption className="border-t-2 border-zinc-950 px-4 py-3.5 wrap-anywhere dark:border-zinc-700 @min-[36rem]:px-5">
+            <p className="text-[11px] font-bold font-mono tracking-wide uppercase text-indigo-700 dark:text-indigo-300">
+              {badge}
+            </p>
+            <p className="mt-0.5 text-lg font-black tracking-tight text-zinc-950 dark:text-white">
+              {name}
+            </p>
+            <p className="mt-0.5 flex items-start gap-1.5 text-xs font-medium text-zinc-600 dark:text-zinc-300">
+              <MapPin aria-hidden="true" className="mt-px size-3.5 shrink-0 text-indigo-700 dark:text-indigo-300" />
+              <span>{location}</span>
+            </p>
+          </figcaption>
+        </figure>
 
-            {/* Comic Narrator Box for Academic Base */}
-            <div className="comic-panel-sm flex items-center gap-3.5 p-4 rounded-xl bg-white dark:bg-zinc-900 text-xs sm:text-sm text-zinc-800 dark:text-zinc-200 mb-10 border-l-4 border-l-indigo-600">
-              <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400 shrink-0" />
-              <div>
-                <span className="font-bold text-zinc-950 dark:text-white uppercase font-mono text-xs block text-indigo-600 dark:text-indigo-400">
-                  {academicRole}
-                </span>
-                <span>{academicInstitution}</span>
-              </div>
+        <div className="grid min-w-0 auto-rows-auto gap-4 wrap-anywhere @min-[44rem]:col-start-2 @min-[44rem]:row-start-2 @min-[60rem]:gap-5 xl:@min-[68rem]:grid-cols-2">
+          {bioParagraphs.map((paragraph, index) => (
+            <div
+              key={index}
+              className="comic-panel-sm min-w-0 rounded-xl bg-white p-4 text-sm leading-relaxed text-zinc-700 first:bg-indigo-50 dark:bg-zinc-900 dark:text-zinc-200 dark:first:bg-indigo-950/60 @min-[36rem]:p-5 xl:@min-[68rem]:only:col-span-full"
+            >
+              <p>{paragraph}</p>
             </div>
-
-            {/* 3 Comic Quick Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              {stats.map((stat, i) => (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, y: 16, scale: 0.95 }}
-                  whileInView={{ opacity: 1, y: 0, scale: 1 }}
-                  viewport={{ once: true, margin: "-30px" }}
-                  transition={{ duration: 0.4, delay: 0.15 + i * 0.1, ease: "easeOut" }}
-                  className={`comic-panel-sm p-4 rounded-xl bg-white dark:bg-zinc-900 ${
-                    i === 0 ? "hover:rotate-1" : i === 1 ? "hover:-rotate-1" : "hover:rotate-1"
-                  } transition-transform`}
-                >
-                  <p className="text-3xl sm:text-4xl font-black tracking-tight text-indigo-600 dark:text-indigo-400 mb-1 font-mono">
-                    {stat.value}
-                  </p>
-                  <p className="text-xs font-bold uppercase tracking-wide text-zinc-950 dark:text-white mb-0.5">
-                    {stat.label}
-                  </p>
-                  <p className="text-xs text-zinc-500 dark:text-zinc-400">
-                    {stat.description}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
+          ))}
         </div>
+      </div>
+    </div>
+  );
+}
+
+export function About({ data }: AboutProps) {
+  return (
+    <section
+      id="about"
+      aria-labelledby="about-title"
+      className="scroll-mt-12 border-t-2 border-zinc-950 py-20 dark:border-zinc-800 sm:scroll-mt-0 sm:py-28"
+    >
+      <div className="mx-auto max-w-6xl px-4 sm:px-6">
+        <AboutPanels data={data} headingId="about-title" />
       </div>
     </section>
   );

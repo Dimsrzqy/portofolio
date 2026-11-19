@@ -53,7 +53,7 @@ export function Skills({ data }: SkillsProps) {
           transition={{ duration: 0.5, ease: "easeOut" }}
           className="max-w-2xl mb-12 sm:mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-850 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4">
+          <div className="inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-900 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)] mb-4">
             <Shield className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
             <span>{chapterLabel}</span>
           </div>

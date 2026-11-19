@@ -158,7 +158,7 @@ We use Google's **Geist** font family (`geistSans` and `geistMono`) with optimiz
   `hover:-translate-y-1 hover:shadow-[6px_6px_0px_0px_#09090b] dark:hover:shadow-[6px_6px_0px_0px_rgba(99,102,241,0.9)] transition-all duration-200`
 
 ### 5.3 Badges & Chapter Marks (`src/components/ui/badge.tsx`)
-- **Chapter Badges**: `inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-850 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider rounded-md shadow-[2px_2px_0px_0px_#09090b]`
+- **Chapter Badges**: `inline-flex items-center gap-2 px-3 py-1 bg-white dark:bg-zinc-900 border-2 border-zinc-950 dark:border-zinc-700 text-xs font-mono font-bold uppercase tracking-wider rounded-md shadow-[2px_2px_0px_0px_#09090b]`
 - **Tech Stack Badges**: `inline-flex items-center text-xs font-bold px-2.5 py-1 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-900 dark:text-zinc-100 border-2 border-zinc-950 dark:border-zinc-700 shadow-[1.5px_1.5px_0px_0px_#09090b]`
 - **Sticker Burst**: `border-2 border-zinc-950 dark:border-white shadow-[2px_2px_0px_0px_#09090b] rotate-[-2deg]`
 

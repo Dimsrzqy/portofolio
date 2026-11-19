@@ -1,17 +1,99 @@
 "use client";
 
-import React from "react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { profileData } from "@/data/profile";
 import { useLanguage } from "@/context/language-context";
-import { Hero3D } from "./hero-3d";
-import { ArrowDown, FileDown, Mail, Sparkles } from "lucide-react";
+import { ArrowDown, FileDown, Mail } from "lucide-react";
 import { GithubIcon, LinkedinIcon, TwitterIcon, InstagramIcon } from "@/components/ui/icons";
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
+
+const heroTech = [
+  { name: "Laravel", logo: "laravel", position: "left-0 top-[17%] -translate-x-1/2 -rotate-8" },
+  { name: "Next.js", logo: "nextjs", position: "right-0 top-[12%] translate-x-1/2 rotate-8" },
+  { name: "Tailwind CSS", logo: "tailwindcss", position: "left-0 top-[48%] -translate-x-1/2 rotate-5" },
+  { name: "MySQL", logo: "mysql", position: "right-0 top-[43%] translate-x-1/2 -rotate-6" },
+  { name: "Flutter", logo: "flutter", position: "left-0 top-[79%] -translate-x-1/2 -rotate-6" },
+  { name: "Python", logo: "python", position: "right-0 top-[74%] translate-x-1/2 rotate-7" },
+];
+
+const typingStart = 270;
+const headlineInterval = 64;
+const subtitleInterval = 34;
+
+function TypedText({ text, start, interval, loop = false }: {
+  text: string;
+  start: number;
+  interval: number;
+  loop?: boolean;
+}) {
+  const characters = Array.from(text);
+  const length = characters.length;
+  const reduceMotion = useReducedMotion();
+  const [visible, setVisible] = useState<number | null>(null);
+
+  useEffect(() => {
+    if (reduceMotion || length === 0) return;
+
+    let count = 0;
+    let timer = window.setTimeout(() => {
+      setVisible(0);
+      timer = window.setTimeout(typeNext, start);
+    }, 0);
+
+    function typeNext() {
+      count += 1;
+      setVisible(count);
+
+      if (count < length) {
+        timer = window.setTimeout(typeNext, interval);
+      } else if (loop) {
+        timer = window.setTimeout(() => {
+          count = 0;
+          setVisible(0);
+          timer = window.setTimeout(typeNext, 210);
+        }, 1600);
+      }
+    }
+
+    return () => window.clearTimeout(timer);
+  }, [text, start, interval, length, loop, reduceMotion]);
+
+  const visibleCount = reduceMotion ? length : (visible ?? length);
+  const caretIndex = visibleCount < length ? visibleCount - 1 : -1;
+
+  return (
+    <span>
+      <span className="sr-only">{text}</span>
+      <span aria-hidden="true">
+        {characters.map((character, index) => (
+          <span
+            key={index}
+            className={loop && index === length - 1
+              ? "text-indigo-600 dark:text-indigo-400"
+              : undefined}
+            style={{
+              visibility: index >= visibleCount ? "hidden" : undefined,
+              position: index === caretIndex ? "relative" : undefined,
+            }}
+          >
+            {character}
+            {index === caretIndex && (
+              <span className="pointer-events-none absolute start-full top-1/2 h-[0.9em] w-0.5 -translate-y-1/2 bg-indigo-600 dark:bg-indigo-400" />
+            )}
+          </span>
+        ))}
+      </span>
+    </span>
+  );
+}
 
 export function Hero() {
   const { language, t } = useLanguage();
   const isId = language === "id";
+  const headline = `${t.hero.headlinePrefix} ${profileData.name}!`;
+  const subtitleStart = typingStart + Array.from(headline).length * headlineInterval + 125;
   return (
     <section className="relative pt-28 sm:pt-36 pb-16 sm:pb-24 overflow-hidden comic-halftone">
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
@@ -24,23 +106,21 @@ export function Hero() {
             className="lg:col-span-7 flex flex-col items-start text-left"
           >
             {/* Comic Speech-Bubble Badge */}
-            <div className="comic-speech-bubble inline-flex items-center gap-2 px-3.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 text-xs font-bold uppercase tracking-wider mb-7">
-              <span className="w-2 h-2 rounded-full bg-indigo-500 animate-ping" />
-              <span>{t.hero.badge}</span>
+            <div className="comic-speech-bubble px-3.5 py-1.5 rounded-lg bg-white dark:bg-zinc-900 text-zinc-950 dark:text-zinc-100 text-xs font-bold uppercase tracking-wider mb-7">
+              {t.hero.badge}
             </div>
 
             {/* Headline */}
             <div className="relative mb-3">
               <h1 className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight text-zinc-950 dark:text-white leading-[1.05]">
-                {t.hero.headlinePrefix} {profileData.name}
-                <span className="text-indigo-600 dark:text-indigo-400">!</span>
+                <TypedText key={headline} text={headline} start={typingStart} interval={headlineInterval} loop />
               </h1>
             </div>
 
             {/* Subtitle */}
             <h2 className="text-xl sm:text-2xl font-bold text-zinc-700 dark:text-zinc-300 mb-6 flex items-center gap-2">
-              <span className="inline-block w-3 h-3 bg-indigo-600 dark:bg-indigo-400 rotate-45" />
-              <span>{t.hero.subtitle}</span>
+              <span aria-hidden="true" className="inline-block size-3 shrink-0 bg-indigo-600 dark:bg-indigo-400 rotate-45" />
+              <TypedText text={t.hero.subtitle} start={subtitleStart} interval={subtitleInterval} />
             </h2>
 
             {/* Bio summary */}
@@ -127,21 +207,33 @@ export function Hero() {
             </div>
           </motion.div>
 
-          {/* 3D Visual Element with Comic Frame */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="lg:col-span-5 flex items-center justify-center relative"
-          >
-            <div className="relative w-full max-w-[400px]">
-              {/* Comic decorative corner marks */}
-              <div className="absolute -top-3 -left-3 px-2 py-0.5 bg-indigo-600 text-white font-mono text-[10px] font-bold uppercase rounded-sm border-2 border-zinc-950 dark:border-white shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_#ffffff] z-10 rotate-[-2deg]">
-                3D CORE // V2.0
+          <div className="group mx-auto w-full max-w-[368px] min-w-0 px-7 perspective-distant sm:px-8 lg:col-span-5">
+            <div className="relative motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:rotate-x-3 motion-safe:group-hover:-rotate-y-6">
+              <div className="comic-panel relative aspect-5/6 overflow-hidden rounded-2xl bg-indigo-50 dark:bg-zinc-900">
+                <div aria-hidden="true" className="comic-halftone absolute inset-0" />
+                <div className="absolute inset-x-[10%] top-[5%] h-[132%]">
+                  <Image
+                    src="/IMG_7944-comic.webp"
+                    alt={isId ? "Ilustrasi komik Dimas mengenakan ransel" : "Comic portrait of Dimas wearing a backpack"}
+                    fill
+                    loading="eager"
+                    sizes="(max-width: 400px) calc(80vw - 74px), 250px"
+                    className="object-contain object-top drop-shadow-[5px_3px_0_#6366f1]"
+                  />
+                </div>
               </div>
-              <Hero3D />
+              <ul role="list" aria-label={isId ? "Teknologi" : "Technologies"} className="absolute inset-0">
+                {heroTech.map(({ name, logo, position }) => (
+                  <li
+                    key={logo}
+                    className={`comic-panel-sm absolute grid size-11 -translate-y-1/2 place-items-center rounded-lg bg-white sm:size-12 ${position}`}
+                  >
+                    <Image src={`/tech/${logo}.svg`} alt={name} title={name} width={28} height={28} unoptimized />
+                  </li>
+                ))}
+              </ul>
             </div>
-          </motion.div>
+          </div>
         </div>
 
         {/* Scroll Indicator Cue */}

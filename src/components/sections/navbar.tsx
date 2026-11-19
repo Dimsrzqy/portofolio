@@ -60,7 +60,7 @@ export function Navbar() {
               {profileData.name}
             </span>
             <span className="text-[10px] font-mono uppercase font-bold text-indigo-600 dark:text-indigo-400 tracking-wider">
-              PORTFOLIO // 2026
+              PORTFOLIO {new Date().getFullYear()}
             </span>
           </div>
         </Link>

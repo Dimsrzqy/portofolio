@@ -1,16 +1,13 @@
 "use client";
 
 import React, { useState } from "react";
-import Image from "next/image";
 import Link from "next/link";
-import { AboutData, StatItem } from "@/types";
+import { AboutData } from "@/types";
+import { AboutPanels } from "@/components/sections/about";
 import {
   updateAboutAction,
-  deleteSupabasePhotoAction,
-  cleanupOrphanProfilePhotosAction,
   uploadProfilePhotoAction,
 } from "@/app/actions/about";
-import { createClient } from "@/lib/supabase/client";
 import { convertAndCompressToWebP, formatBytes } from "@/lib/utils/image-compression";
 import {
   User,
@@ -23,12 +20,8 @@ import {
   AlertCircle,
   Eye,
   Bookmark,
-  GraduationCap,
-  MapPin,
-  Layers,
   ArrowLeft,
   FileCheck,
-  RotateCcw,
 } from "lucide-react";
 
 interface AboutClientProps {
@@ -48,15 +41,6 @@ export function AboutClient({ initialData }: AboutClientProps) {
       bioParagraph2: "",
     };
   });
-  const [stats, setStats] = useState<StatItem[]>(
-    initialData.stats && initialData.stats.length === 3
-      ? initialData.stats
-      : [
-          { value: "3+", label: "Years Coding", description: "Dedicated to modern software engineering" },
-          { value: "15+", label: "Projects Completed", description: "Web apps, APIs, and client platforms" },
-          { value: "100%", label: "Clean Code Focus", description: "Accessibility, performance, and best practices" },
-        ]
-  );
 
   // Upload & Compression State
   const [isProcessingPhoto, setIsProcessingPhoto] = useState(false);
@@ -161,7 +145,6 @@ export function AboutClient({ initialData }: AboutClientProps) {
     const payload: AboutData = {
       ...formData,
       bioParagraph2: "",
-      stats,
     };
 
     try {
@@ -190,15 +173,6 @@ export function AboutClient({ initialData }: AboutClientProps) {
     }
   };
 
-  // Update stat item
-  const updateStatItem = (index: number, field: keyof StatItem, value: string) => {
-    setStats((prev) => {
-      const updated = [...prev];
-      updated[index] = { ...updated[index], [field]: value };
-      return updated;
-    });
-  };
-
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-16">
       {/* Header Banner */}
@@ -222,7 +196,7 @@ export function AboutClient({ initialData }: AboutClientProps) {
                 Edit About & Origin Profile
               </h1>
               <p className="text-xs text-zinc-600 dark:text-zinc-400">
-                Sesuaikan narasi filosofi, afiliasi kampus, foto origin, dan statistik ringkas.
+                Edit foto profil, judul, dan biografi.
               </p>
             </div>
           </div>
@@ -565,102 +539,6 @@ export function AboutClient({ initialData }: AboutClientProps) {
             </div>
           </div>
 
-          {/* Panel 4: Academic Affiliation Box */}
-          <div className="comic-panel-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 space-y-4">
-            <div className="flex items-center gap-2 pb-3 border-b border-zinc-100 dark:border-zinc-800">
-              <GraduationCap className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-              <h2 className="text-xs font-black text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
-                4. Kotak Afiliasi Akademik
-              </h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                  Label Afiliasi
-                </label>
-                <input
-                  type="text"
-                  value={formData.academicRole}
-                  onChange={(e) => setFormData({ ...formData, academicRole: e.target.value })}
-                  placeholder="Academic Affiliation"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-950/60 text-zinc-950 dark:text-white text-xs font-mono uppercase font-bold focus:border-indigo-600 focus:outline-none min-h-[44px]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-bold text-zinc-800 dark:text-zinc-200">
-                  Jurusan & Perguruan Tinggi <span className="text-red-500">*</span>
-                </label>
-                <input
-                  type="text"
-                  required
-                  value={formData.academicInstitution}
-                  onChange={(e) => setFormData({ ...formData, academicInstitution: e.target.value })}
-                  placeholder="Informatics Management, Politeknik Negeri Jember"
-                  className="w-full px-3.5 py-2.5 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50/60 dark:bg-zinc-950/60 text-zinc-950 dark:text-white text-xs font-bold focus:border-indigo-600 focus:outline-none min-h-[44px]"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Panel 5: 3 Quick Stats */}
-          <div className="comic-panel-sm rounded-2xl bg-white dark:bg-zinc-900 p-6 space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-zinc-100 dark:border-zinc-800">
-              <div className="flex items-center gap-2">
-                <Layers className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
-                <h2 className="text-xs font-black text-zinc-950 dark:text-white uppercase tracking-wider font-mono">
-                  5. Tiga Quick Stats
-                </h2>
-              </div>
-              <span className="text-[11px] font-mono text-zinc-400">3 Kartu Angka</span>
-            </div>
-
-            <div className="space-y-4">
-              {stats.map((stat, idx) => (
-                <div
-                  key={idx}
-                  className="p-4 rounded-xl border-2 border-zinc-200 dark:border-zinc-800 bg-zinc-50/50 dark:bg-zinc-950/50 space-y-3"
-                >
-                  <div className="flex items-center justify-between">
-                    <span className="text-[11px] font-mono font-bold text-indigo-600 dark:text-indigo-400 uppercase">
-                      Stat #{idx + 1}
-                    </span>
-                  </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-zinc-400 uppercase">Nilai (cth: 3+)</label>
-                      <input
-                        type="text"
-                        value={stat.value}
-                        onChange={(e) => updateStatItem(idx, "value", e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-mono font-black text-indigo-600 dark:text-indigo-400 focus:outline-none"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-zinc-400 uppercase">Label Utama</label>
-                      <input
-                        type="text"
-                        value={stat.label}
-                        onChange={(e) => updateStatItem(idx, "label", e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs font-bold text-zinc-950 dark:text-white focus:outline-none"
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[10px] font-mono text-zinc-400 uppercase">Keterangan Sub</label>
-                      <input
-                        type="text"
-                        value={stat.description}
-                        onChange={(e) => updateStatItem(idx, "description", e.target.value)}
-                        className="w-full px-3 py-1.5 rounded-lg border-2 border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-900 text-xs text-zinc-500 focus:outline-none"
-                      />
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
           {/* Bottom Save Action Button */}
           <div className="pt-2">
             <button
@@ -688,7 +566,7 @@ export function AboutClient({ initialData }: AboutClientProps) {
         {/* RIGHT COLUMN (5 Cols): Real-Time Live Preview             */}
         {/* ========================================================== */}
         <div
-          className={`lg:col-span-5 space-y-4 lg:sticky lg:top-20 ${
+          className={`min-w-0 lg:col-span-5 space-y-4 lg:sticky lg:top-20 ${
             mobileTab === "edit" ? "hidden lg:block" : "block"
           }`}
         >
@@ -696,105 +574,12 @@ export function AboutClient({ initialData }: AboutClientProps) {
             <div className="flex items-center gap-2">
               <Eye className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
               <span className="text-xs font-bold font-mono uppercase tracking-wider text-zinc-700 dark:text-zinc-300">
-                Live Preview Tampilan Web
+                Pratinjau About
               </span>
             </div>
-            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-zinc-100 dark:bg-zinc-800 text-zinc-500 border border-zinc-200 dark:border-zinc-700">
-              Sinkron Real-time
-            </span>
           </div>
 
-          {/* Visual Comic Preview Box */}
-          <div className="comic-panel rounded-2xl bg-white dark:bg-zinc-900 p-5 space-y-6 overflow-hidden">
-            {/* 1. Portrait Preview Card */}
-            <div className="relative max-w-xs mx-auto">
-              {/* Comic sticker pin */}
-              <div className="absolute -top-3.5 -right-2 bg-indigo-600 text-white font-mono text-[10px] font-black uppercase tracking-wider px-2.5 py-0.5 rounded-md border-2 border-zinc-950 dark:border-white shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_#ffffff] z-20 rotate-3">
-                {formData.stickerText || "ORIGIN FILE"}
-              </div>
-
-              <div className="comic-panel relative rounded-2xl overflow-hidden bg-zinc-100 dark:bg-zinc-800 aspect-4/5">
-                {formData.photoUrl ? (
-                  <Image
-                    src={formData.photoUrl}
-                    alt={formData.name || "Portrait"}
-                    fill
-                    className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
-                    sizes="320px"
-                  />
-                ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center text-zinc-400">
-                    <User className="w-12 h-12 mb-2" />
-                    <span className="text-xs font-mono">Belum ada foto</span>
-                  </div>
-                )}
-                <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/90 via-transparent to-transparent" />
-                <div className="absolute bottom-3.5 left-3.5 right-3.5 text-white">
-                  <div className="inline-block px-2 py-0.5 bg-indigo-600 text-[9px] font-bold uppercase rounded-sm mb-1">
-                    {formData.badge || "ENGINEER PROFILE"}
-                  </div>
-                  <p className="font-black text-sm tracking-tight">{formData.name || "Nama Anda"}</p>
-                  <p className="text-[11px] text-zinc-300 flex items-center gap-1 mt-0.5 font-medium">
-                    <MapPin className="w-3 h-3 text-indigo-400" />
-                    <span>{formData.location || "Lokasi"}</span>
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* 2. Text Content Preview */}
-            <div className="space-y-4 pt-2 border-t border-zinc-100 dark:border-zinc-800">
-              {/* Chapter Header */}
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 bg-zinc-100 dark:bg-zinc-800 border-2 border-zinc-950 dark:border-zinc-700 text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-900 dark:text-zinc-100 rounded-md shadow-[2px_2px_0px_0px_#09090b] dark:shadow-[2px_2px_0px_0px_rgba(99,102,241,0.5)]">
-                <Bookmark className="w-3 h-3 text-indigo-600 dark:text-indigo-400" />
-                <span>{formData.chapterLabel || "CHAPTER 01 // ORIGIN & PHILOSOPHY"}</span>
-              </div>
-
-              {/* Title */}
-              <h3 className="text-lg font-black tracking-tight text-zinc-950 dark:text-white leading-snug">
-                {formData.title || "Engineering with purpose, precision, and simplicity."}
-              </h3>
-
-              {/* Paragraph Preview */}
-              <div className="space-y-3 text-xs text-zinc-600 dark:text-zinc-300 leading-relaxed">
-                {(formData.bioParagraph1 || "")
-                  .split(/\n+/)
-                  .map((p) => p.trim())
-                  .filter(Boolean)
-                  .map((paragraph, idx) => (
-                    <p key={idx}>{paragraph}</p>
-                  ))}
-              </div>
-
-              {/* Academic Box */}
-              <div className="comic-panel-sm flex items-center gap-3 p-3 rounded-xl bg-white dark:bg-zinc-950 text-xs text-zinc-800 dark:text-zinc-200 border-l-4 border-l-indigo-600">
-                <GraduationCap className="w-5 h-5 text-indigo-600 dark:text-indigo-400 shrink-0" />
-                <div>
-                  <span className="font-bold uppercase font-mono text-[10px] block text-indigo-600 dark:text-indigo-400">
-                    {formData.academicRole || "Academic Affiliation"}
-                  </span>
-                  <span className="font-medium text-[11px]">{formData.academicInstitution}</span>
-                </div>
-              </div>
-
-              {/* Quick Stats Grid */}
-              <div className="grid grid-cols-3 gap-2 pt-1">
-                {stats.map((stat, i) => (
-                  <div
-                    key={i}
-                    className="comic-panel-sm p-2.5 rounded-xl bg-white dark:bg-zinc-950 text-center"
-                  >
-                    <p className="text-lg font-black tracking-tight text-indigo-600 dark:text-indigo-400 font-mono">
-                      {stat.value}
-                    </p>
-                    <p className="text-[9px] font-bold uppercase tracking-wide text-zinc-950 dark:text-white truncate">
-                      {stat.label}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+          <AboutPanels data={formData} preview />
         </div>
       </div>
     </div>

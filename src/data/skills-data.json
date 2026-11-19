@@ -1,0 +1,75 @@
+{
+  "chapterLabel": "CHAPTER 02 // ARSENAL",
+  "title": "Skills & Weaponry",
+  "description": "A focused toolkit built around scalable web architectures, modern TypeScript conventions, and type-safe databases.",
+  "categories": [
+    {
+      "category": "Frontend",
+      "skills": [
+        {
+          "name": "Next.js (App Router)"
+        },
+        {
+          "name": "React 19"
+        },
+        {
+          "name": "TypeScript"
+        },
+        {
+          "name": "Tailwind CSS"
+        },
+        {
+          "name": "HTML5 & Semantic SEO"
+        }
+      ]
+    },
+    {
+      "category": "Backend",
+      "skills": [
+        {
+          "name": "Node.js"
+        },
+        {
+          "name": "Next.js Server Actions"
+        },
+        {
+          "name": "laravel"
+        }
+      ]
+    },
+    {
+      "category": "Database",
+      "skills": [
+        {
+          "name": "MySQL"
+        },
+        {
+          "name": "Supabase"
+        },
+        {
+          "name": "MongoDB"
+        }
+      ]
+    },
+    {
+      "category": "Tools",
+      "skills": [
+        {
+          "name": "Git & GitHub"
+        },
+        {
+          "name": "Postman"
+        },
+        {
+          "name": "VS Code / Antigravity"
+        },
+        {
+          "name": "Vercel Deployment"
+        },
+        {
+          "name": "Figma"
+        }
+      ]
+    }
+  ]
+}

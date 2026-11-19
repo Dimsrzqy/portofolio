@@ -1,7 +1,6 @@
 import fs from "fs/promises";
 import path from "path";
 import { createServerSupabaseClient } from "./server";
-import { profileData } from "@/data/profile";
 import { AboutData } from "@/types";
 
 export const defaultAboutData: AboutData = {
@@ -10,14 +9,11 @@ export const defaultAboutData: AboutData = {
   bioParagraph1:
     "Passionate Web Developer and Software Engineer currently studying Informatics Management at Politeknik Negeri Jember. Dedicated to crafting clean, accessible, and high-performance digital products with modern architectures and user ergonomics.",
   bioParagraph2: "",
-  academicRole: "Academic Affiliation",
-  academicInstitution: "Informatics Management, Politeknik Negeri Jember",
   name: "Dimas Rizqy Ilhami",
   badge: "ENGINEER PROFILE",
   location: "Jember, Indonesia",
   photoUrl: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80",
   stickerText: "ORIGIN FILE",
-  stats: profileData.stats,
 };
 
 const FILE_PATH = "about.json";
@@ -61,17 +57,11 @@ export async function getAboutData(): Promise<AboutData> {
           title: parsed.title || defaultAboutData.title,
           bioParagraph1: parsed.bioParagraph1 !== undefined ? parsed.bioParagraph1 : defaultAboutData.bioParagraph1,
           bioParagraph2: parsed.bioParagraph2 || "",
-          academicRole: parsed.academicRole || defaultAboutData.academicRole,
-          academicInstitution: parsed.academicInstitution || defaultAboutData.academicInstitution,
           name: parsed.name || defaultAboutData.name,
           badge: parsed.badge || defaultAboutData.badge,
           location: parsed.location || defaultAboutData.location,
           photoUrl: parsed.photoUrl || defaultAboutData.photoUrl,
           stickerText: parsed.stickerText || defaultAboutData.stickerText,
-          stats:
-            Array.isArray(parsed.stats) && parsed.stats.length > 0
-              ? parsed.stats
-              : defaultAboutData.stats,
         };
 
         // Sinkronkan ke lokal agar selalu up to date
@@ -87,10 +77,15 @@ export async function getAboutData(): Promise<AboutData> {
   const local = await getLocalAboutData();
   if (local) {
     return {
-      ...defaultAboutData,
-      ...local,
-      bioParagraph1: local.bioParagraph1 !== undefined ? local.bioParagraph1 : defaultAboutData.bioParagraph1,
+      chapterLabel: local.chapterLabel ?? defaultAboutData.chapterLabel,
+      title: local.title ?? defaultAboutData.title,
+      bioParagraph1: local.bioParagraph1 ?? defaultAboutData.bioParagraph1,
       bioParagraph2: local.bioParagraph2 || "",
+      name: local.name ?? defaultAboutData.name,
+      badge: local.badge ?? defaultAboutData.badge,
+      location: local.location ?? defaultAboutData.location,
+      photoUrl: local.photoUrl ?? defaultAboutData.photoUrl,
+      stickerText: local.stickerText ?? defaultAboutData.stickerText,
     };
   }
 
